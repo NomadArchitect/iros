@@ -1,0 +1,17 @@
+<map id="dius::linux::OperationStateBase" name="dius::linux::OperationStateBase">
+<area shape="rect" id="Node000001" title=" " alt="" coords="429,171,656,196"/>
+<area shape="rect" id="Node000004" href="$structdius_1_1linux_1_1CloseSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="729,5,907,60"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="568,160,628,115,703,69,728,58,730,62,705,74,631,119,571,164"/>
+<area shape="rect" id="Node000005" href="$structdius_1_1linux_1_1OpenSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="730,84,906,139"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="604,165,729,132,731,137,606,170"/>
+<area shape="rect" id="Node000006" href="$structdius_1_1linux_1_1ReadSomeSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="704,163,932,203"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="669,181,704,181,704,186,669,186"/>
+<area shape="rect" id="Node000007" href="$structdius_1_1linux_1_1ScheduleSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="704,227,932,267"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="613,197,732,225,730,230,611,202"/>
+<area shape="rect" id="Node000008" href="$structdius_1_1linux_1_1WriteSomeSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="704,291,932,331"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="575,202,633,240,705,277,737,289,735,294,703,282,631,244,572,206"/>
+<area shape="rect" id="Node000002" href="$classdi_1_1container_1_1IntrusiveForwardListNode.html" title=" " alt="" coords="199,163,381,203"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="395,181,429,181,429,186,395,186"/>
+<area shape="rect" id="Node000003" href="$structdi_1_1util_1_1Immovable.html" title=" " alt="" coords="5,171,151,196"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="164,181,199,181,199,186,164,186"/>
+</map>

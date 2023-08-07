@@ -1,0 +1,7 @@
+<map id="iris::acpi::SDTHeader" name="iris::acpi::SDTHeader">
+<area shape="rect" id="Node000001" title="System Description Table Header." alt="" coords="61,5,220,31"/>
+<area shape="rect" id="Node000002" href="$structiris_1_1acpi_1_1MADT.html" title="Multiple APIC Description Table." alt="" coords="5,79,129,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,42,81,80,77,77,117,38"/>
+<area shape="rect" id="Node000003" href="$structiris_1_1acpi_1_1RSDT.html" title="Root System Description Table." alt="" coords="154,79,274,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="164,38,204,77,200,80,161,42"/>
+</map>

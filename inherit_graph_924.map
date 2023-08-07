@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,31,187,56"/>
+<area shape="rect" id="Node000001" href="$structiris_1_1mm_1_1BackedPhysicalPage.html" title="A physical page of memory tracked by a backing object." alt="" coords="235,5,451,31"/>
+<area shape="poly" id="edge340_Node000000_Node000001" title=" " alt="" coords="200,30,234,26,235,32,201,35"/>
+<area shape="rect" id="Node000002" href="$classiris_1_1mm_1_1Region.html" title=" " alt="" coords="278,55,407,80"/>
+<area shape="poly" id="edge341_Node000000_Node000002" title=" " alt="" coords="201,51,278,58,278,64,200,56"/>
+</map>

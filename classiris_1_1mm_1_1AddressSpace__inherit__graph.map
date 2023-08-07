@@ -1,0 +1,9 @@
+<map id="iris::mm::AddressSpace" name="iris::mm::AddressSpace">
+<area shape="rect" id="Node000001" title=" " alt="" coords="116,167,291,192"/>
+<area shape="rect" id="Node000002" href="$classdi_1_1sync_1_1Synchronized.html" title=" " alt="" coords="5,79,172,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="129,124,188,164,185,169,126,129"/>
+<area shape="rect" id="Node000003" href="$structdi_1_1vocab_1_1IntrusiveRefCount.html" title=" " alt="" coords="196,86,440,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="291,121,222,169,219,164,288,117"/>
+<area shape="rect" id="Node000004" href="$structdi_1_1util_1_1Immovable.html" title=" " alt="" coords="245,5,391,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="321,44,321,86,315,86,315,44"/>
+</map>

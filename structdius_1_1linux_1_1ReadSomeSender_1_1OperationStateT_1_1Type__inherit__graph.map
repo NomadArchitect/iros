@@ -1,0 +1,9 @@
+<map id="dius::linux::ReadSomeSender::OperationStateT&lt; Rec &gt;::Type" name="dius::linux::ReadSomeSender::OperationStateT&lt; Rec &gt;::Type">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,240,233,280"/>
+<area shape="rect" id="Node000002" href="$structdius_1_1linux_1_1OperationStateBase.html" title=" " alt="" coords="6,167,233,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,206,122,240,117,240,117,206"/>
+<area shape="rect" id="Node000003" href="$classdi_1_1container_1_1IntrusiveForwardListNode.html" title=" " alt="" coords="28,79,211,119"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="122,132,122,166,117,166,117,132"/>
+<area shape="rect" id="Node000004" href="$structdi_1_1util_1_1Immovable.html" title=" " alt="" coords="47,5,192,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="122,44,122,79,117,79,117,44"/>
+</map>

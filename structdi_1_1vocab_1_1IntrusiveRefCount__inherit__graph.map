@@ -1,0 +1,21 @@
+<map id="di::vocab::IntrusiveRefCount&lt; T &gt;" name="di::vocab::IntrusiveRefCount&lt; T &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="199,193,443,219"/>
+<area shape="rect" id="Node000003" href="$classiris_1_1Inode.html" title=" " alt="" coords="525,5,677,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="338,180,399,110,442,72,489,40,523,26,525,31,492,44,445,76,403,113,342,184"/>
+<area shape="rect" id="Node000004" href="$classiris_1_1TNode.html" title=" " alt="" coords="519,55,683,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="345,182,408,135,448,110,490,89,523,78,525,83,492,94,451,115,411,139,349,187"/>
+<area shape="rect" id="Node000005" href="$classiris_1_1Task.html" title=" " alt="" coords="531,104,670,129"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="364,185,490,139,537,127,539,132,491,145,366,190"/>
+<area shape="rect" id="Node000006" href="$classiris_1_1TaskArguments.html" title=" " alt="" coords="525,154,677,194"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="445,189,524,180,525,185,446,194"/>
+<area shape="rect" id="Node000007" href="$classiris_1_1TaskNamespace.html" title=" " alt="" coords="521,218,680,258"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="446,218,521,226,521,232,445,223"/>
+<area shape="rect" id="Node000008" href="$classiris_1_1TaskStatus.html" title=" " alt="" coords="491,283,711,308"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="366,222,491,267,539,280,537,285,490,273,364,227"/>
+<area shape="rect" id="Node000009" href="$classiris_1_1mm_1_1AddressSpace.html" title=" " alt="" coords="513,333,688,373"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="349,225,412,272,492,318,521,330,519,335,489,323,409,276,346,230"/>
+<area shape="rect" id="Node000010" href="$classiris_1_1mm_1_1BackingObject.html" title=" " alt="" coords="511,397,690,437"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="340,228,401,305,444,346,492,382,516,394,513,399,489,387,441,351,397,308,336,232"/>
+<area shape="rect" id="Node000002" href="$structdi_1_1util_1_1Immovable.html" title=" " alt="" coords="5,193,151,219"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,203,198,203,198,209,164,209"/>
+</map>

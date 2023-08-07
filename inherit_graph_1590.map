@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structiris_1_1acpi_1_1InterruptControllerStructureHeader.html" title="Interrupt Controller Structure Header." alt="" coords="5,92,211,132"/>
+<area shape="rect" id="Node000001" href="$structiris_1_1acpi_1_1InterruptSourceOverrideStructure.html" title="Interrupt Source Override Structure." alt="" coords="259,5,444,45"/>
+<area shape="poly" id="edge863_Node000000_Node000001" title=" " alt="" coords="175,85,258,55,292,43,293,48,260,60,177,90"/>
+<area shape="rect" id="Node000002" href="$structiris_1_1acpi_1_1IoApicStructure.html" title="I/O APIC Structure." alt="" coords="259,70,443,95"/>
+<area shape="poly" id="edge864_Node000000_Node000002" title=" " alt="" coords="224,95,259,91,259,96,224,101"/>
+<area shape="rect" id="Node000003" href="$structiris_1_1acpi_1_1LocalApicNmiStructure.html" title="Local APIC NMI Structure." alt="" coords="264,120,439,160"/>
+<area shape="poly" id="edge865_Node000000_Node000003" title=" " alt="" coords="224,123,264,127,264,133,224,128"/>
+<area shape="rect" id="Node000004" href="$structiris_1_1acpi_1_1ProcessorLocalApicStructure.html" title="Processor Local APIC Structure." alt="" coords="260,184,443,224"/>
+<area shape="poly" id="edge866_Node000000_Node000004" title=" " alt="" coords="171,135,260,170,292,181,290,186,258,174,169,140"/>
+</map>

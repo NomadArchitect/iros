@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,74,123,99"/>
+<area shape="rect" id="Node000001" href="$structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectionTokenT_1_1Type.html" title=" " alt="" coords="171,5,381,75"/>
+<area shape="poly" id="edge4_Node000000_Node000001" title=" " alt="" coords="135,68,170,61,171,66,136,74"/>
+<area shape="rect" id="Node000002" href="$structdi_1_1execution_1_1ipc__binary__ns_1_1MessageDecode_1_1Sender.html" title=" " alt="" coords="173,99,379,168"/>
+<area shape="poly" id="edge5_Node000000_Node000002" title=" " alt="" coords="136,100,173,108,172,113,135,105"/>
+</map>

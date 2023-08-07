@@ -1,0 +1,33 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,587,136,612"/>
+<area shape="rect" id="Node000001" href="$structdi_1_1execution_1_1bulk__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="221,5,397,60"/>
+<area shape="poly" id="edge877_Node000000_Node000001" title=" " alt="" coords="71,572,82,464,104,314,119,237,136,167,157,109,182,70,200,55,220,44,222,49,203,59,186,73,162,112,142,169,124,238,109,315,88,465,77,573"/>
+<area shape="rect" id="Node000002" href="$structdi_1_1execution_1_1counting__scope__ns_1_1NestReceiverT_1_1Type.html" title=" " alt="" coords="213,84,405,139"/>
+<area shape="poly" id="edge878_Node000000_Node000002" title=" " alt="" coords="73,572,86,479,109,352,141,230,160,181,182,148,212,127,215,131,186,152,165,184,146,231,114,353,91,479,78,573"/>
+<area shape="rect" id="Node000003" href="$structdi_1_1execution_1_1first__value__ns_1_1NextReceiverT_1_1Type.html" title=" " alt="" coords="208,163,411,217"/>
+<area shape="poly" id="edge879_Node000000_Node000003" title=" " alt="" coords="69,573,74,505,90,412,104,363,124,314,149,269,182,228,206,210,209,215,186,232,154,272,129,317,109,365,95,414,79,505,75,573"/>
+<area shape="rect" id="Node000004" href="$structdi_1_1execution_1_1ignore__all__ns_1_1NextReceiverT_1_1Type.html" title=" " alt="" coords="212,242,407,311"/>
+<area shape="poly" id="edge880_Node000000_Node000004" title=" " alt="" coords="73,573,83,521,103,454,135,383,157,351,182,321,210,301,213,306,186,325,161,354,140,386,108,455,88,522,78,574"/>
+<area shape="rect" id="Node000005" href="$structdi_1_1execution_1_1ignore__all__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="218,336,401,391"/>
+<area shape="poly" id="edge881_Node000000_Node000005" title=" " alt="" coords="77,573,91,534,113,488,143,441,182,400,217,380,219,385,186,404,148,444,118,490,96,536,82,574"/>
+<area shape="rect" id="Node000006" href="$structdi_1_1execution_1_1into__result__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="228,415,391,469"/>
+<area shape="poly" id="edge882_Node000000_Node000006" title=" " alt="" coords="86,574,127,526,153,500,183,478,227,458,229,463,185,483,157,504,131,529,91,577"/>
+<area shape="rect" id="Node000007" href="$structdi_1_1execution_1_1into__variant__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="224,493,395,548"/>
+<area shape="poly" id="edge883_Node000000_Node000007" title=" " alt="" coords="119,579,183,557,223,544,225,549,185,562,121,584"/>
+<area shape="rect" id="Node000008" href="$structdi_1_1execution_1_1on__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="220,572,399,627"/>
+<area shape="poly" id="edge884_Node000000_Node000008" title=" " alt="" coords="150,597,220,597,220,602,150,602"/>
+<area shape="rect" id="Node000009" href="$structdi_1_1execution_1_1on__ns_1_1ReceiverWithEnvT_1_1Type.html" title=" " alt="" coords="209,651,409,705"/>
+<area shape="poly" id="edge885_Node000000_Node000009" title=" " alt="" coords="122,614,185,635,223,648,221,653,183,641,120,619"/>
+<area shape="rect" id="Node000010" href="$structdi_1_1execution_1_1repeat__effect__until__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="211,729,408,784"/>
+<area shape="poly" id="edge886_Node000000_Node000010" title=" " alt="" coords="91,621,131,669,157,693,185,714,212,728,209,733,183,719,153,697,127,672,87,625"/>
+<area shape="rect" id="Node000011" href="$structdi_1_1execution_1_1schedule__from__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="205,808,413,863"/>
+<area shape="poly" id="edge887_Node000000_Node000011" title=" " alt="" coords="82,624,97,662,118,707,148,754,186,793,207,807,204,811,182,797,144,757,114,710,92,664,77,626"/>
+<area shape="rect" id="Node000012" href="$structdi_1_1execution_1_1schedule__from__ns_1_1ScheduleReceiverT_1_1Type.html" title=" " alt="" coords="184,887,435,941"/>
+<area shape="poly" id="edge888_Node000000_Node000012" title=" " alt="" coords="78,625,88,677,107,744,139,813,160,844,186,872,202,884,199,888,182,876,156,847,135,815,102,745,83,678,73,626"/>
+<area shape="rect" id="Node000013" href="$structdi_1_1execution_1_1transform__each__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="211,965,408,1020"/>
+<area shape="poly" id="edge889_Node000000_Node000013" title=" " alt="" coords="75,625,81,690,97,778,111,824,130,870,155,913,186,951,212,969,209,974,182,955,151,916,125,873,106,826,92,779,75,691,70,626"/>
+<area shape="rect" id="Node000014" href="$structdi_1_1execution_1_1with__env__ns_1_1ReceiverT_1_1Type.html" title=" " alt="" coords="230,1044,389,1099"/>
+<area shape="poly" id="edge890_Node000000_Node000014" title=" " alt="" coords="78,625,92,716,115,837,147,954,166,999,186,1030,206,1046,231,1057,229,1061,204,1050,182,1033,161,1001,142,955,110,838,87,717,73,626"/>
+<area shape="rect" id="Node000015" href="$structdius_1_1linux_1_1RunSender_1_1OperationStateT_1_1Type_1_1Rec2.html" title=" " alt="" coords="222,1123,397,1177"/>
+<area shape="poly" id="edge891_Node000000_Node000015" title=" " alt="" coords="77,625,89,730,110,875,125,949,143,1016,163,1071,186,1108,203,1122,223,1133,220,1137,200,1127,182,1112,158,1073,138,1018,120,950,105,876,83,731,72,626"/>
+</map>

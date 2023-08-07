@@ -1,0 +1,26 @@
+var sequence__sender_8h =
+[
+    [ "di::execution::set_next_ns::Function", "structdi_1_1execution_1_1set__next__ns_1_1Function.html", "structdi_1_1execution_1_1set__next__ns_1_1Function" ],
+    [ "di::execution::SequenceTag", "structdi_1_1execution_1_1SequenceTag.html", null ],
+    [ "di::execution::dummy_ns::DummyOperationState", "structdi_1_1execution_1_1dummy__ns_1_1DummyOperationState.html", "structdi_1_1execution_1_1dummy__ns_1_1DummyOperationState" ],
+    [ "di::execution::dummy_ns::DummySenderOf< Sigs >", "structdi_1_1execution_1_1dummy__ns_1_1DummySenderOf.html", "structdi_1_1execution_1_1dummy__ns_1_1DummySenderOf" ],
+    [ "di::execution::sender_to_sequence_adaptor_ns::ReceiverT< Rec >", "structdi_1_1execution_1_1sender__to__sequence__adaptor__ns_1_1ReceiverT.html", "structdi_1_1execution_1_1sender__to__sequence__adaptor__ns_1_1ReceiverT" ],
+    [ "di::execution::sender_to_sequence_adaptor_ns::ReceiverT< Rec >::Type", "structdi_1_1execution_1_1sender__to__sequence__adaptor__ns_1_1ReceiverT_1_1Type.html", "structdi_1_1execution_1_1sender__to__sequence__adaptor__ns_1_1ReceiverT_1_1Type" ],
+    [ "di::execution::subscribe_ns::Function", "structdi_1_1execution_1_1subscribe__ns_1_1Function.html", "structdi_1_1execution_1_1subscribe__ns_1_1Function" ],
+    [ "di::concepts::NextSender", "conceptdi_1_1concepts_1_1NextSender.html", null ],
+    [ "di::concepts::SequenceSender", "conceptdi_1_1concepts_1_1SequenceSender.html", null ],
+    [ "di::concepts::SequenceSenderIn", "conceptdi_1_1concepts_1_1SequenceSenderIn.html", null ],
+    [ "di::concepts::SubscriberOf", "conceptdi_1_1concepts_1_1SubscriberOf.html", null ],
+    [ "di::concepts::detail::AdaptableToSequence", "conceptdi_1_1concepts_1_1detail_1_1AdaptableToSequence.html", null ],
+    [ "di::concepts::SubscriberFrom", "conceptdi_1_1concepts_1_1SubscriberFrom.html", null ],
+    [ "di::concepts::SequenceSenderTo", "conceptdi_1_1concepts_1_1SequenceSenderTo.html", null ],
+    [ "NextSenderOf", "sequence__sender_8h.html#a7ea14d76f6d21e88c4d0097282c9771c", null ],
+    [ "Receiver", "sequence__sender_8h.html#a20d103754449e4c08c4ad9f8943c6fda", null ],
+    [ "SequenceCompletionSignaturesOf", "sequence__sender_8h.html#aefcd015ec5ceb1d341220a3998aa6377", null ],
+    [ "SubscribeResult", "sequence__sender_8h.html#ae554ee93f6bb7c59bf401539f1086b37", null ],
+    [ "dummy_sender_of", "sequence__sender_8h.html#ab1f81e3072421bd0be497e27b533bd19", null ],
+    [ "enable_sequence_sender", "sequence__sender_8h.html#a11e5885549fd5b1a99e397e3f21217dc", null ],
+    [ "enable_sequence_sender< S >", "sequence__sender_8h.html#a1e00afc6df733f05f17c4930613b84cb", null ],
+    [ "set_next", "sequence__sender_8h.html#a2458c1749fcf4c3a9fe48a55ab8820ba", null ],
+    [ "subscribe", "sequence__sender_8h.html#a8b77b087d9dba9eef4d2b9d8edf17a6f", null ]
+];

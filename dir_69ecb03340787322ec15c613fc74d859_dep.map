@@ -1,0 +1,22 @@
+<map id="iris/include/iris/arch/x86/amd64" name="iris/include/iris/arch/x86/amd64">
+<area shape="rect" id="node4" href="dir_6719ab1f1f7655efc2fa43f7eb574fd1.html" title="libs" alt="" coords="7,209,52,235"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000007_000109.html" title="23" alt="" coords="12,182,30,196"/>
+<area shape="rect" id="node5" href="dir_945708b8d3397c2507c5e618c4393ffa.html" title="mm" alt="" coords="123,209,171,235"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000007_000126.html" title="4" alt="" coords="141,182,150,197"/>
+<area shape="rect" id="node2" href="dir_20d17feb9c2a141ce639d72d812af749.html" title="core" alt="" coords="157,63,208,88"/>
+<area shape="rect" id="node3" href="dir_786015ac58edb6a34d6ae4d90a813fcf.html" title="hw" alt="" coords="67,136,109,161"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000051_000088.html" title="1" alt="" coords="118,124,128,139"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000051_000109.html" title="3" alt="" coords="36,184,45,199"/>
+<area shape="rect" id="edge7-headlabel" href="dir_000051_000126.html" title="1" alt="" coords="165,189,174,204"/>
+<area shape="rect" id="node6" href="dir_7cd5da72e38cd0f075d57a788b4f2242.html" title="hw" alt="" coords="211,209,253,235"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000051_000089.html" title="2" alt="" coords="225,182,235,197"/>
+<area shape="rect" id="node7" href="dir_be381e3b7aa79a91c125f50d5abcc4e9.html" title="core" alt="" coords="285,136,336,161"/>
+<area shape="rect" id="edge8-headlabel" href="dir_000051_000052.html" title="1" alt="" coords="273,112,283,127"/>
+<area shape="rect" id="node8" href="dir_0d9b91d0f0b9ec0856341172f56c0a57.html" title="uapi" alt="" coords="360,136,411,161"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000051_000181.html" title="1" alt="" coords="341,117,350,132"/>
+<area shape="rect" id="edge9-headlabel" href="dir_000088_000109.html" title="10" alt="" coords="48,193,66,208"/>
+<area shape="rect" id="edge11-headlabel" href="dir_000088_000126.html" title="2" alt="" coords="127,183,137,197"/>
+<area shape="rect" id="edge10-headlabel" href="dir_000088_000089.html" title="2" alt="" coords="194,188,203,202"/>
+<area shape="rect" id="clust2" href="dir_69ecb03340787322ec15c613fc74d859.html" alt="" coords="56,52,219,172"/>
+<area shape="rect" id="clust1" href="dir_407e6dd7785b117805c64851fb4bc1a2.html" title="x86" alt="" coords="45,16,229,183"/>
+</map>

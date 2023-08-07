@@ -1,0 +1,19 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classdi_1_1vocab_1_1Optional.html" title=" " alt="" coords="5,286,188,311"/>
+<area shape="rect" id="Node000001" href="$classdi_1_1util_1_1NonPropagatingCache.html" title=" " alt="" coords="264,5,439,45"/>
+<area shape="poly" id="edge820_Node000000_Node000001" title=" " alt="" coords="103,272,120,226,147,167,185,107,208,79,234,55,262,39,265,44,238,59,212,83,189,110,151,170,125,228,108,274"/>
+<area shape="rect" id="Node000002" href="$classdi_1_1util_1_1NonPropagatingCache.html" title=" " alt="" coords="264,69,439,109"/>
+<area shape="poly" id="edge821_Node000000_Node000002" title=" " alt="" coords="108,272,128,238,157,196,192,155,235,119,263,105,265,109,237,124,196,158,161,200,133,241,113,275"/>
+<area shape="rect" id="Node000003" href="$classdi_1_1util_1_1NonPropagatingCache.html" title=" " alt="" coords="239,133,464,203"/>
+<area shape="poly" id="edge822_Node000000_Node000003" title=" " alt="" coords="126,276,176,245,235,212,260,200,262,205,237,217,179,250,129,281"/>
+<area shape="rect" id="Node000004" href="$classdi_1_1util_1_1NonPropagatingCache.html" title=" " alt="" coords="236,227,467,282"/>
+<area shape="poly" id="edge823_Node000000_Node000004" title=" " alt="" coords="183,281,235,272,236,277,184,286"/>
+<area shape="rect" id="Node000005" href="$classdi_1_1util_1_1NonPropagatingCache.html" title=" " alt="" coords="245,307,458,376"/>
+<area shape="poly" id="edge824_Node000000_Node000005" title=" " alt="" coords="187,311,245,321,244,326,186,316"/>
+<area shape="rect" id="Node000006" href="$classdi_1_1util_1_1NonPropagatingCache.html" title=" " alt="" coords="245,401,458,455"/>
+<area shape="poly" id="edge825_Node000000_Node000006" title=" " alt="" coords="128,317,178,352,237,386,265,398,263,403,235,390,175,356,125,322"/>
+<area shape="rect" id="Node000007" href="$classdi_1_1util_1_1NonPropagatingCache.html" title=" " alt="" coords="250,480,453,520"/>
+<area shape="poly" id="edge826_Node000000_Node000007" title=" " alt="" coords="114,322,163,393,197,432,237,464,262,477,260,482,235,469,194,435,158,396,109,325"/>
+<area shape="rect" id="Node000008" href="$classdi_1_1util_1_1NonPropagatingCache.html" title=" " alt="" coords="264,544,439,584"/>
+<area shape="poly" id="edge827_Node000000_Node000008" title=" " alt="" coords="109,324,126,369,153,425,190,482,212,507,238,530,265,545,262,550,234,534,209,511,186,485,148,427,121,371,104,326"/>
+</map>

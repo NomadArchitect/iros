@@ -1,0 +1,7 @@
+<map id="di::parser::detail::AlternationParser&lt; Parsers &gt;" name="di::parser::detail::AlternationParser&lt; Parsers &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="307,30,449,85"/>
+<area shape="rect" id="Node000002" href="$classdi_1_1parser_1_1ParserBase.html" title=" " alt="" coords="5,5,259,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="273,41,307,45,306,51,272,46"/>
+<area shape="rect" id="Node000003" href="$structdi_1_1parser_1_1detail_1_1AlternationParserMarker.html" title=" " alt="" coords="39,69,225,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="239,73,306,64,307,69,239,78"/>
+</map>

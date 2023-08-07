@@ -1,0 +1,9 @@
+<map id="di::vocab::Span&lt; T, dynamic_extent &gt;" name="di::vocab::Span&lt; T, dynamic_extent &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="288,77,436,117"/>
+<area shape="rect" id="Node000002" href="$classdi_1_1meta_1_1EnableView.html" title=" " alt="" coords="5,5,240,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,47,241,55,303,75,301,80,239,60,211,52"/>
+<area shape="rect" id="Node000003" href="$classdi_1_1meta_1_1EnableBorrowedContainer.html" title=" " alt="" coords="13,70,232,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="246,95,288,95,288,100,246,100"/>
+<area shape="rect" id="Node000004" href="$classdi_1_1container_1_1ConstantVectorInterface.html" title=" " alt="" coords="15,149,230,203"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="219,142,299,115,301,120,220,147"/>
+</map>

@@ -1,0 +1,23 @@
+<map id="di::container::IntrusiveForwardListNode&lt; Tag &gt;" name="di::container::IntrusiveForwardListNode&lt; Tag &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="199,192,381,232"/>
+<area shape="rect" id="Node000003" href="$structdi_1_1container_1_1HashNode.html" title=" " alt="" coords="441,49,620,89"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="335,182,495,87,497,92,338,187"/>
+<area shape="rect" id="Node000005" href="$structdius_1_1linux_1_1OperationStateBase.html" title=" " alt="" coords="433,192,628,232"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="395,209,433,209,433,215,395,215"/>
+<area shape="rect" id="Node000011" href="$structiris_1_1detail_1_1InternalObjectFreed.html" title=" " alt="" coords="429,256,632,296"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="380,233,456,253,454,259,378,238"/>
+<area shape="rect" id="Node000002" href="$structdi_1_1util_1_1Immovable.html" title=" " alt="" coords="5,199,151,225"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,209,199,209,199,215,164,215"/>
+<area shape="rect" id="Node000004" href="$structdi_1_1container_1_1OwningHashNode.html" title=" " alt="" coords="697,5,891,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="633,50,696,39,697,44,634,55"/>
+<area shape="rect" id="Node000006" href="$structdius_1_1linux_1_1CloseSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="705,70,883,125"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="579,183,679,134,708,122,709,127,681,138,581,188"/>
+<area shape="rect" id="Node000007" href="$structdius_1_1linux_1_1OpenSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="706,149,882,203"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="641,194,705,185,706,191,642,200"/>
+<area shape="rect" id="Node000008" href="$structdius_1_1linux_1_1ReadSomeSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="680,228,908,268"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="642,225,680,230,680,235,642,230"/>
+<area shape="rect" id="Node000009" href="$structdius_1_1linux_1_1ScheduleSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="680,292,908,332"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="619,235,633,242,658,260,681,278,710,289,708,294,679,282,654,264,631,246,616,240"/>
+<area shape="rect" id="Node000010" href="$structdius_1_1linux_1_1WriteSomeSender_1_1OperationStateT_1_1Type.html" title=" " alt="" coords="680,356,908,396"/>
+<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="628,237,634,242,645,255,652,268,658,294,664,319,671,330,682,342,699,354,696,358,678,346,666,333,659,320,653,295,647,270,641,258,630,246,625,242"/>
+</map>

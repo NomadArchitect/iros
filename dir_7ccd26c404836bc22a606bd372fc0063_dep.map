@@ -1,0 +1,18 @@
+<map id="libs/dius/linux" name="libs/dius/linux">
+<area shape="rect" id="node1" href="dir_6ac4aa95e4478b160428441746083760.html" title="include" alt="" coords="148,136,217,161"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000114_000093.html" title="20" alt="" coords="165,109,182,123"/>
+<area shape="rect" id="node7" href="dir_984cd133b143ec7cf21a4bdcb401bfa5.html" title="di" alt="" coords="410,136,449,161"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000114_000058.html" title="14" alt="" coords="386,117,403,132"/>
+<area shape="rect" id="node3" href="dir_83ec75ae334b275c5a1cbeb2b647848a.html" title="arch" alt="" coords="37,63,88,88"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000016_000093.html" title="3" alt="" coords="147,112,156,127"/>
+<area shape="rect" id="node4" href="dir_3e9ab2ac8e0c181c7b090f831025d676.html" title="filesystem" alt="" coords="287,63,377,88"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000078_000093.html" title="7" alt="" coords="222,128,232,143"/>
+<area shape="rect" id="node6" href="dir_048287677304621c659962c2a2c2732d.html" title="ccpp" alt="" coords="473,136,525,161"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000078_000030.html" title="6" alt="" coords="454,114,464,129"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000078_000058.html" title="7" alt="" coords="399,111,408,126"/>
+<area shape="rect" id="node5" href="dir_5cb394cea0d37f6d415e9f209ac091a8.html" title="system" alt="" coords="191,63,262,88"/>
+<area shape="rect" id="edge8-headlabel" href="dir_000167_000093.html" title="3" alt="" coords="202,118,211,132"/>
+<area shape="rect" id="edge7-headlabel" href="dir_000167_000030.html" title="1" alt="" coords="452,119,462,134"/>
+<area shape="rect" id="clust2" href="dir_7ccd26c404836bc22a606bd372fc0063.html" alt="" coords="27,52,388,99"/>
+<area shape="rect" id="clust1" href="dir_2bc9e3f402dd86ba93785edd287294d9.html" title="dius" alt="" coords="16,16,399,172"/>
+</map>

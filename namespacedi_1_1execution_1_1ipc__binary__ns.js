@@ -1,0 +1,25 @@
+var namespacedi_1_1execution_1_1ipc__binary__ns =
+[
+    [ "Client", "structdi_1_1execution_1_1ipc__binary__ns_1_1Client.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1Client" ],
+    [ "ConnectionDataT", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectionDataT.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectionDataT" ],
+    [ "ConnectionT", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectionT.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectionT" ],
+    [ "ConnectionTokenT", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectionTokenT.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectionTokenT" ],
+    [ "ConnectToClientFunction", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectToClientFunction.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectToClientFunction" ],
+    [ "ConnectToServerFunction", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectToServerFunction.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1ConnectToServerFunction" ],
+    [ "MessageDecode", "structdi_1_1execution_1_1ipc__binary__ns_1_1MessageDecode.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1MessageDecode" ],
+    [ "MessageHeader", "structdi_1_1execution_1_1ipc__binary__ns_1_1MessageHeader.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1MessageHeader" ],
+    [ "MessageSequence", "structdi_1_1execution_1_1ipc__binary__ns_1_1MessageSequence.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1MessageSequence" ],
+    [ "SequenceOpRecT", "structdi_1_1execution_1_1ipc__binary__ns_1_1SequenceOpRecT.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1SequenceOpRecT" ],
+    [ "SequenceOpT", "structdi_1_1execution_1_1ipc__binary__ns_1_1SequenceOpT.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1SequenceOpT" ],
+    [ "SequenceT", "structdi_1_1execution_1_1ipc__binary__ns_1_1SequenceT.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1SequenceT" ],
+    [ "Server", "structdi_1_1execution_1_1ipc__binary__ns_1_1Server.html", "structdi_1_1execution_1_1ipc__binary__ns_1_1Server" ],
+    [ "ClientConnection", "namespacedi_1_1execution_1_1ipc__binary__ns.html#a43007e4d8ef4dd37c694dd763bbd5f55", null ],
+    [ "ConnectionData", "namespacedi_1_1execution_1_1ipc__binary__ns.html#aa0a71671b8164098e4bc3bf478ab627e", null ],
+    [ "ConnectionToken", "namespacedi_1_1execution_1_1ipc__binary__ns.html#a424645f17b1ac1d26dd8da55afd63647", null ],
+    [ "Sequence", "namespacedi_1_1execution_1_1ipc__binary__ns.html#acb77e07dd8b65815b3a80430d07a1e2a", null ],
+    [ "SequenceOp", "namespacedi_1_1execution_1_1ipc__binary__ns.html#adb75b6de08563994c64b1379107b6065", null ],
+    [ "SequenceOpRec", "namespacedi_1_1execution_1_1ipc__binary__ns.html#a3f5dc25722e4d0eba23aad778a8b284c", null ],
+    [ "ServerConnection", "namespacedi_1_1execution_1_1ipc__binary__ns.html#ad5e3f2532c2f2dec909e709a321662d5", null ],
+    [ "message_decode", "namespacedi_1_1execution_1_1ipc__binary__ns.html#a9427c72672e3f39749dedc8255fcbafb", null ],
+    [ "message_sequence", "namespacedi_1_1execution_1_1ipc__binary__ns.html#a0ebb41803cfcc4559859c13c91c68d3d", null ]
+];

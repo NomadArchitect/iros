@@ -1,0 +1,11 @@
+<map id="di::vocab::StatusCode&lt; void &gt;" name="di::vocab::StatusCode&lt; void &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,49,168,89"/>
+<area shape="rect" id="Node000002" href="$classdi_1_1vocab_1_1detail_1_1StatusCodeStorage.html" title=" " alt="" coords="216,5,421,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,51,215,46,216,51,182,57"/>
+<area shape="rect" id="Node000004" href="$classdi_1_1vocab_1_1detail_1_1StatusCodeStorage.html" title=" " alt="" coords="227,85,411,125"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="182,81,227,88,226,93,181,86"/>
+<area shape="rect" id="Node000003" href="$classdi_1_1vocab_1_1StatusCode_3_01Erased_3_01T_01_4_01_4.html" title=" " alt="" coords="489,13,651,53"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="435,30,488,30,488,35,435,35"/>
+<area shape="rect" id="Node000005" href="$classdi_1_1vocab_1_1StatusCode_3_01T_01_4.html" title=" " alt="" coords="469,92,671,117"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="424,102,469,102,469,107,424,107"/>
+</map>

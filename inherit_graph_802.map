@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classdi_1_1execution_1_1WithAwaitableSenders.html" title=" " alt="" coords="5,49,213,89"/>
+<area shape="rect" id="Node000001" href="$structdi_1_1execution_1_1async__generator__ns_1_1PromiseBaseT_1_1Type.html" title=" " alt="" coords="261,5,476,60"/>
+<area shape="poly" id="edge275_Node000000_Node000001" title=" " alt="" coords="226,50,261,45,261,50,227,55"/>
+<area shape="rect" id="Node000002" href="$classdi_1_1execution_1_1lazy__ns_1_1PromiseBase.html" title=" " alt="" coords="265,85,473,125"/>
+<area shape="poly" id="edge276_Node000000_Node000002" title=" " alt="" coords="227,82,265,88,264,93,227,88"/>
+</map>
