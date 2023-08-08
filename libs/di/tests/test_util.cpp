@@ -1,3 +1,4 @@
+#include <di/util/named_arguments.h>
 #include <di/util/prelude.h>
 #include <dius/test/prelude.h>
 
@@ -76,7 +77,31 @@ constexpr void strong_int() {
     static_assert(sizeof(X) == sizeof(i32));
 }
 
+//! [named_arguments]
+struct Foo : di::NamedArgument<Foo, i32> {};
+struct Bar : di::NamedArgument<Bar, i32> {};
+
+template<typename... Args>
+requires(di::ValidNamedArguments<di::meta::List<Foo, Bar>, Args...>)
+constexpr i32 f(Args&&... args) {
+    auto named = di::NamedArguments(di::forward<Args>(args)...);
+
+    auto foo_value = di::get_named_argument_or<Foo>(di::move(named), 1);
+    auto bar_value = di::get_named_argument_or<Bar>(di::move(named), 2);
+
+    return foo_value + bar_value;
+}
+
+constexpr static void named_arguments() {
+    ASSERT_EQ(f(), 3);
+    ASSERT_EQ(f(Foo(5)), 7);
+    ASSERT_EQ(f(Bar(5)), 6);
+    ASSERT_EQ(f(Foo(5), Bar(5)), 10);
+}
+//! [named_arguments]
+
 TESTC(util, scope_exit)
 TESTC(util, uuid)
 TESTC(util, strong_int)
+TESTC(util, named_arguments)
 }

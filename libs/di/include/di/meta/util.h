@@ -13,6 +13,9 @@ namespace di::concepts {
 template<typename T, typename U>
 concept NotSameAs = (!SameAs<T, U>);
 
+template<typename T, template<typename...> typename Template>
+concept RemoveCVRefInstanceOf = InstanceOf<meta::RemoveCVRef<T>, Template>;
+
 template<typename T, typename U>
 concept RemoveCVSameAs = SameAs<meta::RemoveCV<T>, meta::RemoveCV<U>>;
 
