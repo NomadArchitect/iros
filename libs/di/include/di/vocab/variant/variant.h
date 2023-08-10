@@ -201,12 +201,12 @@ public:
         return do_emplace(c_<index>, util::forward<Args>(args)...);
     }
 
-    template<typename T, typename U, typename... Args, auto index = meta::Lookup<T, List>>
-    requires(meta::UniqueType<T, List> && concepts::ConstructibleFrom<T, std::initializer_list<U>, Args...>)
-    constexpr T& emplace(std::initializer_list<U> list, Args&&... args) {
-        destroy();
-        return do_emplace(c_<index>, list, util::forward<Args>(args)...);
-    }
+    // template<typename T, typename U, typename... Args, auto index = meta::Lookup<T, List>>
+    // requires(meta::UniqueType<T, List> && concepts::ConstructibleFrom<T, std::initializer_list<U>, Args...>)
+    // constexpr T& emplace(std::initializer_list<U> list, Args&&... args) {
+    //     destroy();
+    //     return do_emplace(c_<index>, list, util::forward<Args>(args)...);
+    // }
 
 private:
     template<typename... Other>

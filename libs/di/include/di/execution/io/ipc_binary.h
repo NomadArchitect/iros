@@ -7,7 +7,10 @@
 #include <di/execution/algorithm/just_from.h>
 #include <di/execution/algorithm/let.h>
 #include <di/execution/algorithm/let_value_with.h>
+#include <di/execution/algorithm/when_all.h>
+#include <di/execution/algorithm/with_env.h>
 #include <di/execution/interface/connect.h>
+#include <di/execution/interface/get_env.h>
 #include <di/execution/interface/run.h>
 #include <di/execution/io/async_read_exactly.h>
 #include <di/execution/io/async_read_some.h>
@@ -27,6 +30,7 @@
 #include <di/execution/types/completion_signuatures.h>
 #include <di/execution/types/empty_env.h>
 #include <di/function/index_dispatch.h>
+#include <di/function/invoke.h>
 #include <di/function/make_deferred.h>
 #include <di/function/monad/monad_try.h>
 #include <di/function/tag_invoke.h>
@@ -47,12 +51,14 @@
 #include <di/serialization/binary_serializer.h>
 #include <di/serialization/deserialize.h>
 #include <di/serialization/serialize.h>
+#include <di/sync/stop_token/forward_declaration.h>
 #include <di/sync/stop_token/in_place_stop_source.h>
 #include <di/sync/stop_token/in_place_stop_token.h>
 #include <di/types/byte.h>
 #include <di/util/addressof.h>
 #include <di/util/bit_cast.h>
 #include <di/util/defer_construct.h>
+#include <di/util/noncopyable.h>
 #include <di/util/reference_wrapper.h>
 #include <di/vocab/array/array.h>
 #include <di/vocab/error/error.h>
@@ -85,11 +91,6 @@ namespace ipc_binary_ns {
             Vector<byte, Alloc> receive_buffer;
             sync::InPlaceStopSource stop_source;
             u32 message_number { 0 };
-
-            auto get_env() const {
-                return make_env(empty_env, with(get_allocator, allocator),
-                                with(get_stop_token, stop_source.get_stop_token()));
-            }
         };
     };
 
@@ -246,162 +247,180 @@ namespace ipc_binary_ns {
     template<typename Proto, typename Read, typename Write, typename Alloc, typename ClientOrServer>
     using ConnectionToken = meta::Type<ConnectionTokenT<Proto, Read, Write, Alloc, ClientOrServer>>;
 
-    template<typename Op>
-    struct SequenceOpRecT {
-        struct Type {
-            using is_receiver = void;
+    template<typename Proto, typename Read, typename Write, typename TxFun, typename RxFun, typename Alloc,
+             typename ClientOrServer>
+    struct MakeJoinedSender {
+        using Data = ConnectionData<Proto, Read, Write, Alloc>;
+        using Token = ConnectionToken<Proto, Read, Write, Alloc, ClientOrServer>;
 
-            Op* operation;
+        using IncomingSequence = decltype(message_sequence<Proto, Read, Write, Alloc, ClientOrServer>(
+            di::declval<ConnectionData<Proto, Read, Write, Alloc>*>()));
 
-            friend void tag_invoke(Tag<set_value>, Type&& self, auto&&...) { self.operation->did_complete(); }
+        static auto make_rx_sequence(Data* data, RxFun&& rx_function) {
+            if constexpr (concepts::Invocable<RxFun, IncomingSequence, Token>) {
+                return di::invoke(di::forward<RxFun>(rx_function),
+                                  message_sequence<Proto, Read, Write, Alloc, ClientOrServer>(data), Token(data));
+            } else {
+                return di::invoke(di::forward<RxFun>(rx_function),
+                                  message_sequence<Proto, Read, Write, Alloc, ClientOrServer>(data));
+            }
+        }
 
-            friend void tag_invoke(Tag<set_error>, Type&& self, auto&&) { self.operation->did_complete(); }
+        static auto make_rx_sender(Data* data, RxFun&& rx_function) {
+            using RxSequence = decltype(make_rx_sequence(data, di::forward<RxFun>(rx_function)));
 
-            friend void tag_invoke(Tag<set_stopped>, Type&& self) { self.operation->did_complete(); }
-        };
+            if constexpr (concepts::SequenceSender<RxSequence>) {
+                return ignore_all(make_rx_sequence(data, di::forward<RxFun>(rx_function)));
+            } else {
+                return make_rx_sequence(data, di::forward<RxFun>(rx_function));
+            }
+        }
+
+        template<typename Env>
+        auto operator()(Data* data, TxFun&& tx_function, RxFun&& rx_function, Env&& env) const {
+            return with_env(make_env(di::forward<Env>(env), with(get_allocator, auto(data->allocator)),
+                                     with(get_stop_token, data->stop_source.get_stop_token())),
+                            when_all(di::invoke(di::forward<TxFun>(tx_function), Token(data)),
+                                     make_rx_sender(data, di::forward<RxFun>(rx_function))));
+        }
     };
 
-    template<typename Op>
-    using SequenceOpRec = meta::Type<SequenceOpRecT<Op>>;
+    template<typename Proto, typename Read, typename Write, typename TxFun, typename RxFun, typename Alloc,
+             typename ClientOrServer>
+    constexpr inline auto make_joined_sender =
+        MakeJoinedSender<Proto, Read, Write, TxFun, RxFun, Alloc, ClientOrServer> {};
 
-    template<typename Proto, typename Read, typename Write, typename Fun, typename Alloc, typename ClientOrServer,
-             typename Rec>
-    struct SequenceOpT {
+    template<typename Proto, typename Read, typename Write, typename TxFun, typename RxFun, typename Alloc,
+             typename ClientOrServer, typename Rec>
+    struct OperationStateT {
         struct Type {
         public:
-            using Re = SequenceOpRec<Type>;
             using ItemToken = ConnectionToken<Proto, Read, Write, Alloc, ClientOrServer>;
-            using ItemSender = decltype(just(di::declval<ItemToken>()));
-            using NextSender = meta::NextSenderOf<Rec, ItemSender>;
-            using NextOp = meta::ConnectResult<NextSender, Re>;
+            using TxSender = meta::InvokeResult<TxFun, ItemToken>;
 
-            using IncomingSequence =
-                meta::InvokeResult<Fun, decltype(message_sequence<Proto, Read, Write, Alloc, ClientOrServer>(
-                                            di::declval<ConnectionData<Proto, Read, Write, Alloc>*>()))>;
-            using IncomingSender = decltype(ignore_all(di::declval<IncomingSequence>()));
-            using IncomingOp = meta::ConnectResult<IncomingSender, Re>;
+            using IncomingSequence = decltype(message_sequence<Proto, Read, Write, Alloc, ClientOrServer>(
+                di::declval<ConnectionData<Proto, Read, Write, Alloc>*>()));
+            using RxSender = meta::InvokeResult<RxFun, IncomingSequence>;
 
-            explicit Type(ConnectionData<Proto, Read, Write, Alloc>* data, Fun&& function, Rec receiver)
-                : m_data(data)
-                , m_receiver(di::move(receiver))
-                , m_incoming_op(
-                      connect(ignore_all(invoke(di::move(function),
-                                                message_sequence<Proto, Read, Write, Alloc, ClientOrServer>(m_data))),
-                              Re(this))) {}
+            using InnerSender = decltype(make_joined_sender<Proto, Read, Write, TxFun, RxFun, Alloc, ClientOrServer>(
+                di::declval<ConnectionData<Proto, Read, Write, Alloc>*>(), di::declval<TxFun>(), di::declval<RxFun>(),
+                get_env(di::declval<Rec>())));
 
-            void did_complete() {
-                auto old = m_pending.fetch_sub(1, MemoryOrder::AcquireRelease);
-                if (old == 1) {
-                    set_value(di::move(m_receiver));
-                }
-            }
+            using InnerOp = meta::ConnectResult<InnerSender, Rec>;
+
+            explicit Type(Read read, Write write, TxFun&& tx_function, RxFun&& rx_function, Alloc allocator,
+                          Rec receiver)
+                : m_data(di::move(read), di::move(write), di::move(allocator))
+                , m_inner_op(connect(make_joined_sender<Proto, Read, Write, TxFun, RxFun, Alloc, ClientOrServer>(
+                                         di::addressof(m_data), di::forward<TxFun>(tx_function),
+                                         di::forward<RxFun>(rx_function), get_env(receiver)),
+                                     di::move(receiver))) {}
 
         private:
-            friend void tag_invoke(Tag<start>, Type& self) {
-                start(self.m_incoming_op);
+            friend void tag_invoke(Tag<start>, Type& self) { start(self.m_inner_op); }
 
-                auto& next_op = self.m_next_op.emplace(DeferConstruct([&] {
-                    return connect(set_next(self.m_receiver, just(ItemToken(self.m_data))), Re(di::addressof(self)));
-                }));
-                start(next_op);
-            }
-
-            ConnectionData<Proto, Read, Write, Alloc>* m_data;
-            Rec m_receiver;
-            Atomic<usize> m_pending { 2 };
-            DI_IMMOVABLE_NO_UNIQUE_ADDRESS IncomingOp m_incoming_op;
-            DI_IMMOVABLE_NO_UNIQUE_ADDRESS Optional<NextOp> m_next_op;
+            ConnectionData<Proto, Read, Write, Alloc> m_data;
+            DI_IMMOVABLE_NO_UNIQUE_ADDRESS InnerOp m_inner_op;
         };
     };
 
-    template<typename Proto, typename Read, typename Write, typename Fun, typename Alloc, typename ClientOrServer,
-             typename Rec>
-    using SequenceOp = meta::Type<SequenceOpT<Proto, Read, Write, Fun, Alloc, ClientOrServer, Rec>>;
+    template<typename Proto, typename Read, typename Write, typename TxFun, typename RxFun, typename Alloc,
+             typename ClientOrServer, typename Rec>
+    using OperationState = meta::Type<OperationStateT<Proto, Read, Write, TxFun, RxFun, Alloc, ClientOrServer, Rec>>;
 
-    template<typename Proto, typename Read, typename Write, typename Fun, typename Alloc, typename ClientOrServer>
-    struct SequenceT {
-        struct Type {
-            using is_sender = SequenceTag;
+    template<typename Proto, typename Read, typename Write, typename TxFun, typename RxFun, typename Alloc,
+             typename ClientOrServer>
+    struct SenderT {
+        struct Type : NonCopyable {
+            using is_sender = void;
 
-            explicit Type(ConnectionData<Proto, Read, Write, Alloc>* data_, Fun function_)
-                : data(data_), function(di::move(function_)) {}
+            explicit Type(Read read_, Write write_, TxFun tx_function_, RxFun rx_function_, Alloc allocator_)
+                : read(di::move(read_))
+                , write(di::move(write_))
+                , tx_function(di::move(tx_function_))
+                , rx_function(di::move(rx_function_))
+                , allocator(di::move(allocator_)) {}
 
-            using CompletionSignatures =
-                di::CompletionSignatures<SetValue(ConnectionToken<Proto, Read, Write, Alloc, ClientOrServer>)>;
+            template<typename Env>
+            using Sigs = meta::CompletionSignaturesOf<
+                decltype(make_joined_sender<Proto, Read, Write, TxFun, RxFun, Alloc, ClientOrServer>(
+                    di::declval<ConnectionData<Proto, Read, Write, Alloc>*>(), di::declval<TxFun>(),
+                    di::declval<RxFun>(), di::declval<Env>))>;
 
-            template<concepts::SubscriberOf<CompletionSignatures> Rec>
-            friend auto tag_invoke(Tag<subscribe>, Type&& self, Rec receiver) {
-                return SequenceOp<Proto, Read, Write, Fun, Alloc, ClientOrServer, Rec>(
-                    self.data, di::move(self.function), di::move(receiver));
+            template<typename Env>
+            friend auto tag_invoke(Tag<get_completion_signatures>, Type&&, Env&&) -> Sigs<Env>;
+
+            template<typename Rec>
+            requires(concepts::ReceiverOf<Rec, Sigs<meta::EnvOf<Rec>>>)
+            friend auto tag_invoke(Tag<connect>, Type&& self, Rec receiver) {
+                return OperationState<Proto, Read, Write, TxFun, RxFun, Alloc, ClientOrServer, Rec>(
+                    di::move(self.read), di::move(self.write), di::move(self.tx_function), di::move(self.rx_function),
+                    di::move(self.allocator), di::move(receiver));
             }
 
             friend auto tag_invoke(Tag<get_env>, Type const& self) {
-                return make_env(self.data->get_env(), with(get_sequence_cardinality, c_<1zu>));
+                return make_env(empty_env, with(get_allocator, self.allocator));
             }
 
-            ConnectionData<Proto, Read, Write, Alloc>* data;
-            [[no_unique_address]] Fun function;
+            [[no_unique_address]] Read read;
+            [[no_unique_address]] Write write;
+            [[no_unique_address]] TxFun tx_function;
+            [[no_unique_address]] RxFun rx_function;
+            [[no_unique_address]] Alloc allocator;
         };
     };
 
-    template<typename Proto, typename Read, typename Write, typename Fun, typename Alloc, typename ClientOrServer>
-    using Sequence = meta::Type<SequenceT<Proto, Read, Write, Fun, Alloc, ClientOrServer>>;
+    template<typename Proto, typename Read, typename Write, typename TxFun, typename RxFun, typename Alloc,
+             typename ClientOrServer>
+    using Sender = meta::Type<SenderT<Proto, Read, Write, TxFun, RxFun, Alloc, ClientOrServer>>;
 
-    template<typename Proto, typename Read, typename Write, typename Fun, typename Alloc, typename ClientOrServer>
-    struct ConnectionT {
-        struct Type {
-            explicit Type(Read read, Write write, Fun function_, Alloc allocator)
-                : data(di::move(read), di::move(write), di::move(allocator)), function(di::move(function_)) {}
+    template<typename Proto, typename Read, typename Write, typename TxFun, typename RxFun, typename Alloc>
+    using ClientSender = Sender<Proto, meta::RemoveCVRef<Read>, meta::RemoveCVRef<Write>, meta::Decay<TxFun>,
+                                meta::Decay<RxFun>, meta::Decay<Alloc>, Client>;
 
-            [[no_unique_address]] ConnectionData<Proto, Read, Write, Alloc> data;
-            [[no_unique_address]] Fun function;
-
-            friend auto tag_invoke(Tag<run>, Type& self) {
-                return Sequence<Proto, Read, Write, Fun, Alloc, ClientOrServer>(di::addressof(self.data),
-                                                                                di::move(self.function));
-            }
-        };
-    };
-
-    template<typename Proto, typename Read, typename Write, typename Fun, typename Alloc>
-    using ClientConnection = meta::Type<ConnectionT<Proto, meta::RemoveCVRef<Read>, meta::RemoveCVRef<Write>,
-                                                    meta::Decay<Fun>, meta::Decay<Alloc>, Client>>;
-
-    template<typename Proto, typename Read, typename Write, typename Fun, typename Alloc>
-    using ServerConnection = meta::Type<ConnectionT<Proto, meta::RemoveCVRef<Read>, meta::RemoveCVRef<Write>,
-                                                    meta::Decay<Fun>, meta::Decay<Alloc>, Server>>;
+    template<typename Proto, typename Read, typename Write, typename TxFun, typename RxFun, typename Alloc>
+    using ServerSender = Sender<Proto, meta::RemoveCVRef<Read>, meta::RemoveCVRef<Write>, meta::Decay<TxFun>,
+                                meta::Decay<RxFun>, meta::Decay<Alloc>, Server>;
 
     template<concepts::InstanceOf<Protocol> Proto>
     struct ConnectToClientFunction {
-        template<typename Comm, concepts::DecayConstructible Fun, concepts::Allocator Alloc = DefaultAllocator>
+        template<typename Comm, concepts::DecayConstructible TxFun, concepts::DecayConstructible RxFun,
+                 concepts::Allocator Alloc = DefaultAllocator>
         requires(concepts::AsyncReadable<Comm> && concepts::AsyncWritable<Comm> && concepts::CopyConstructible<Comm>)
-        auto operator()(Comm&& channel, Fun&& function, Alloc&& allocator = {}) const {
-            return (*this)(auto(channel), auto(channel), di::forward<Fun>(function), di::forward<Alloc>(allocator));
+        auto operator()(Comm&& channel, TxFun&& tx_function, RxFun&& rx_function, Alloc&& allocator = {}) const {
+            return (*this)(auto(channel), auto(channel), di::forward<TxFun>(tx_function),
+                           di::forward<RxFun>(rx_function), di::forward<Alloc>(allocator));
         }
 
-        template<concepts::AsyncReadable ReadComm, concepts::AsyncWritable WriteComm, concepts::DecayConstructible Fun,
+        template<concepts::AsyncReadable ReadComm, concepts::AsyncWritable WriteComm,
+                 concepts::DecayConstructible TxFun, concepts::DecayConstructible RxFun,
                  concepts::Allocator Alloc = DefaultAllocator>
-        auto operator()(ReadComm&& read, WriteComm&& write, Fun&& function, Alloc&& allocator = {}) const {
-            return make_deferred<ServerConnection<Proto, ReadComm, WriteComm, Fun, Alloc>>(
-                di::forward<ReadComm>(read), di::forward<WriteComm>(write), di::forward<Fun>(function),
-                di::forward<Alloc>(allocator));
+        auto operator()(ReadComm&& read, WriteComm&& write, TxFun&& tx_function, RxFun&& rx_function,
+                        Alloc&& allocator = {}) const {
+            return ServerSender<Proto, ReadComm, WriteComm, TxFun, RxFun, Alloc>(
+                di::forward<ReadComm>(read), di::forward<WriteComm>(write), di::forward<TxFun>(tx_function),
+                di::forward<RxFun>(rx_function), di::forward<Alloc>(allocator));
         }
     };
 
     template<concepts::InstanceOf<Protocol> Proto>
     struct ConnectToServerFunction {
-        template<typename Comm, concepts::DecayConstructible Fun, concepts::Allocator Alloc = DefaultAllocator>
+        template<typename Comm, concepts::DecayConstructible TxFun, concepts::DecayConstructible RxFun,
+                 concepts::Allocator Alloc = DefaultAllocator>
         requires(concepts::AsyncReadable<Comm> && concepts::AsyncWritable<Comm> && concepts::CopyConstructible<Comm>)
-        auto operator()(Comm&& channel, Fun&& function, Alloc&& allocator = {}) const {
-            return (*this)(auto(channel), auto(channel), di::forward<Fun>(function), di::forward<Alloc>(allocator));
+        auto operator()(Comm&& channel, TxFun&& tx_function, RxFun&& rx_function, Alloc&& allocator = {}) const {
+            return (*this)(auto(channel), auto(channel), di::forward<TxFun>(tx_function),
+                           di::forward<RxFun>(rx_function), di::forward<Alloc>(allocator));
         }
 
-        template<concepts::AsyncReadable ReadComm, concepts::DecayConstructible Fun, concepts::AsyncWritable WriteComm,
+        template<concepts::AsyncReadable ReadComm, concepts::DecayConstructible TxFun,
+                 concepts::DecayConstructible RxFun, concepts::AsyncWritable WriteComm,
                  concepts::Allocator Alloc = DefaultAllocator>
-        auto operator()(ReadComm&& read, WriteComm&& write, Fun&& function, Alloc&& allocator = {}) const {
-            return make_deferred<ClientConnection<Proto, ReadComm, WriteComm, Fun, Alloc>>(
-                di::forward<ReadComm>(read), di::forward<WriteComm>(write), di::forward<Fun>(function),
-                di::forward<Alloc>(allocator));
+        auto operator()(ReadComm&& read, WriteComm&& write, TxFun&& tx_function, RxFun&& rx_function,
+                        Alloc&& allocator = {}) const {
+            return ClientSender<Proto, ReadComm, WriteComm, TxFun, RxFun, Alloc>(
+                di::forward<ReadComm>(read), di::forward<WriteComm>(write), di::forward<TxFun>(tx_function),
+                di::forward<RxFun>(rx_function), di::forward<Alloc>(allocator));
         }
     };
 }
