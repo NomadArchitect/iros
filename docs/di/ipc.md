@@ -118,6 +118,51 @@ when sending a message (this doesn't block since everything is asynchronous).
 Additionally, a protocol is defined by 2 lists of messages. This implies that every connection is either a client or a
 server. In a symmetric protocol, both lists will be the same.
 
+### Creating a Connection
+
+In order to create a connection, the library makes use of a variadic argument factory, which simulates named arguments.
+Since connections are bidirectional, the factory will always accept a `transmit()` object, which is a function which is
+passed the connection token and returns a sender, and a `receive()` object, which is a transformation which accepts a
+received message and the connection token, and returns a sender. For ease of use, the second argument is optional, and
+if a sequence sender is returned, then `exuecution::ignore_all()` is applied to convert the sequence into a sender. The
+factory may also accept additional arguments, which are defined on a per-protocol basis.
+
+```cpp
+using MyProtocol = /* ... */;
+
+auto reader = /* ... */;
+auto writer = /* ... */;
+
+// Example 1: only need to send messages.
+auto ex1 = di::ipc_binary_connect_to_server<MyProtocol>(
+    di::Transmit([](auto token) {
+        return di::execution::send(token, /* ... */);
+    })
+);
+
+// Example 2: only need to receive messages.
+auto ex2 = di::ipc_binary_connect_to_client<MyProtocol>(
+    di::Receive([](auto const& message, auto token) {
+        return di::execution::send(token, /* ... */);
+    })
+);
+
+// Example 3: need to send and receive messages, but don't need the connection to send replys.
+auto ex3 = di::ipc_binary_connect_to_server<MyProtocol>(
+    di::Transmit([](auto token) {
+        return di::execution::send(token, /* ... */);
+    }),
+    di::Receive(di::execution::transform_each([](auto const& message) {
+        /* Do something with the message. */
+        return di::execution::just();
+    }))
+);
+```
+
+The reason this API is designed this way is to ensure the lifetime of the connection is managed correctly. The
+transmitter and receiver are both passed the connection token, which is managed by the outer sender. Additionally, the
+received messsage system is managed by the outer sender, which allows for waiting for replies to messages.
+
 ## Synchronization
 
 Because the model involves has a separate read and write stream, there is no need for synchronization between the two.
