@@ -1,6 +1,8 @@
 #include <di/container/string/string_view.h>
+#include <di/math/abs_diff.h>
 #include <di/types/integers.h>
 #include <dius/print.h>
+#include <diusgfx/bitmap.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <syscall.h>
@@ -14,42 +16,48 @@
 constexpr usize width = 1253;
 constexpr usize height = 1374;
 constexpr usize stride = width * 4;
-constexpr usize size = 2 * stride * height;
+constexpr usize size = stride * height;
 
 static wl_compositor* compositor;
 static wl_shm* shm;
 static xdg_wm_base* shell;
 
-void draw(byte* data) {
-    static unsigned char i = 128;
-    for (usize x = 0; x < width; x++) {
-        for (usize y = 0; y < height; y++) {
-            struct pixel {
-                // little-endian ARGB
-                unsigned char blue;
-                unsigned char green;
-                unsigned char red;
-                unsigned char alpha;
-            }* px = (struct pixel*) (data + y * stride + x * 4);
-            if ((x + y) % 30 < 10) {
-                // transparent
-                px->alpha = 0;
-            } else if ((x + y) % 30 < 20) {
-                // yellow
-                px->alpha = 255;
-                px->red = 255;
-                px->green = 255;
-                px->blue = 0;
-            } else {
-                // semitransparent red
-                px->alpha = 255;
-                px->red = i;
-                px->green = 0;
-                px->blue = 0;
+void draw_rect(gfx::BitMap data, usize sx, usize sy, usize w, usize h, gfx::ARGBPixel color) {
+    for (auto y = sy; y < sy + h && y < data.height(); y++) {
+        for (auto x = sx; x < sx + w && x < data.width(); x++) {
+            data.argb_pixels()[y, x] = color;
+        }
+    }
+}
+
+void draw_circle(gfx::BitMap data, usize cx, usize cy, usize r, gfx::ARGBPixel color) {
+    auto sx = r > cx ? 0 : cx - r;
+    auto sy = r > cy ? 0 : cy - r;
+
+    for (auto y = sy; y <= cy + r && y < data.height(); y++) {
+        for (auto x = sx; x <= cx + r && x < data.width(); x++) {
+            auto dx = di::abs_diff(x, cx);
+            auto dy = di::abs_diff(y, cy);
+            if (dx * dx + dy * dy < r * r) {
+                data.argb_pixels()[y, x] = color;
             }
         }
     }
-    i += 1;
+}
+
+void draw(gfx::BitMap data) {
+    // Clear
+    draw_rect(data, 0, 0, width, height, gfx::ARGBPixel(0, 0, 0, 255));
+
+    // Moving rect.
+    static usize x = 0;
+    draw_rect(data, x++, 100, 200, 200, gfx::ARGBPixel(255, 0, 0, 255));
+    x %= width;
+
+    // Moving circle.
+    static usize z = 100;
+    draw_circle(data, z++, 500, 100, gfx::ARGBPixel(0, 255, 0, 255));
+    z %= width;
 }
 
 int main() {
@@ -111,7 +119,9 @@ int main() {
     }
 
     auto* data = (byte*) mmap(nullptr, size * 2, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    draw(data);
+    auto bitmap1 = gfx::BitMap({ data, size }, width, height);
+    auto bitmap2 = gfx::BitMap({ data + size, size }, width, height);
+    draw(bitmap1);
 
     wl_shm_pool* pool = wl_shm_create_pool(shm, fd, size * 2);
     wl_buffer* buffer = wl_shm_pool_create_buffer(pool, 0, width, height, stride, WL_SHM_FORMAT_ARGB8888);
@@ -160,10 +170,10 @@ int main() {
         wl_display_dispatch(display);
 
         if (use2) {
-            draw(data + size);
+            draw(bitmap2);
             wl_surface_attach(surface, buffer2, 0, 0);
         } else {
-            draw(data);
+            draw(bitmap1);
             wl_surface_attach(surface, buffer, 0, 0);
         }
         wl_surface_damage_buffer(surface, 0, 0, width, height);

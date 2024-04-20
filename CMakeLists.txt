@@ -42,7 +42,7 @@ separate_arguments(IROS_SanitizerFlags)
 separate_arguments(IROS_ExtraFlags)
 separate_arguments(IROS_IrisFlags)
 
-set(as_subproject Di Dius Iris)
+set(as_subproject Di Dius Diusgfx Iris)
 
 macro(find_package)
     if(NOT "${ARGV0}" IN_LIST as_subproject)
@@ -96,6 +96,10 @@ if(IROS_BuildUserspace
    OR IROS_BuildLibraries
 )
     add_subdirectory(libs/dius)
+endif()
+
+if(IROS_BuildUserspace OR IROS_BuildLibraries)
+    add_subdirectory(libs/diusgfx)
 endif()
 
 if(IROS_BuildUserspace)
