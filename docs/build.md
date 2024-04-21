@@ -112,8 +112,8 @@ install directory, which is used as the system root for the disk image. This is 
 The kernel can be run using QEMU. Currently, the kernel does not support graphical output, and so it must be run in a
 terminal. The kernel uses the serial console to do input and output. Since there is also need for the QEMU debug
 console, this mode uses QEMU's chardev multiplexer. This means that exiting the kernel must be done using the special
-QEMU command: `Ctrl-A X`. This will exit the QEMU debug console, and then the kernel will exit. To get to the QEMU debug
-console, use `Ctrl-A C`. Then the kernel can be inspected using normal QEMU commands.
+QEMU command: `Ctrl-D X`. This will exit the QEMU debug console, and then the kernel will exit. To get to the QEMU debug
+console, use `Ctrl-D C`. Then the kernel can be inspected using normal QEMU commands.
 
 ### Debugging the Kernel
 

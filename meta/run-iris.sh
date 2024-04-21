@@ -54,4 +54,5 @@ qemu-system-"$IROS_ARCH" \
     -cpu max \
     -no-reboot \
     -display none \
+    -echr '0x04' \
     -device isa-debug-exit,iobase=0xf4,iosize=0x04

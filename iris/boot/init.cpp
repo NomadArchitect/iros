@@ -15,6 +15,7 @@
 #include <iris/mm/address_space.h>
 #include <iris/mm/map_physical_address.h>
 #include <iris/mm/page_frame_allocator.h>
+#include <iris/mm/physical_address.h>
 #include <iris/mm/sections.h>
 #include <iris/third_party/limine.h>
 
@@ -83,7 +84,12 @@ void iris_main() {
     auto memory_map = di::Span { memmap_request.response->entries, memmap_request.response->entry_count };
 
     ASSERT(!memory_map.empty());
-    global_state.max_physical_address = di::max(memory_map | di::transform([&](auto* entry) {
+    global_state.max_physical_address = di::max(memory_map | di::filter([&](auto* entry) {
+                                                    // Ignore anything over 4 GiB for now.
+                                                    return mm::PhysicalAddress(entry->base) + entry->length <
+                                                           mm::PhysicalAddress(4_u64 * 1024_u64 * 1024_u64 * 1024_u64);
+                                                }) |
+                                                di::transform([&](auto* entry) {
                                                     return mm::PhysicalAddress(entry->base) + entry->length;
                                                 }));
 

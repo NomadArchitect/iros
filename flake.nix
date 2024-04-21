@@ -64,13 +64,23 @@
               pkgs.clang
               pkgs.cmake
               pkgs.ninja
+              pkgs.bison
+              pkgs.flex
               pkgs.doxygen
               pkgs.graphviz
+              pkgs.mpfr
+              pkgs.gmp
+              pkgs.libmpc
+              pkgs.qemu
               pkgs.ccache
+              pkgs.parted
               pkgs.gcovr
+              pkgs.pipewire
               pkgs.wayland-scanner
               pkgs.wayland
             ];
+
+          hardeningDisable = ["format"];
         };
       };
     };

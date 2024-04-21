@@ -10,6 +10,7 @@ option(IROS_BuildTools "Build tools required native tools." OFF)
 option(IROS_BuildCcpp "Build the c++ libc." OFF)
 option(IROS_UseDiusRuntime "Use dius provided runtime instead of system libc." OFF)
 option(IROS_NeverBuildDocs "Never enable documentation build target." OFF)
+option(IROS_NeverLinkCompileCommands "Never link compile_commands.json to the project root" OFF)
 
 set(IROS_NonUnityBuildPreset
     ""
@@ -139,5 +140,9 @@ if(IROS_NonUnityBuildPreset)
 endif()
 
 # Link the active compile_commands.json to the project directory.
-execute_process(COMMAND rm -f "${CMAKE_SOURCE_DIR}/compile_commands.json")
-execute_process(COMMAND ln -s "${CMAKE_BINARY_DIR}/compile_commands.json" "${CMAKE_SOURCE_DIR}/compile_commands.json")
+if(NOT IROS_NeverLinkCompileCommands)
+    execute_process(COMMAND rm -f "${CMAKE_SOURCE_DIR}/compile_commands.json")
+    execute_process(
+        COMMAND ln -s "${CMAKE_BINARY_DIR}/compile_commands.json" "${CMAKE_SOURCE_DIR}/compile_commands.json"
+    )
+endif()

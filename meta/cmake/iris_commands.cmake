@@ -8,7 +8,7 @@ if(CMAKE_CROSSCOMPILING)
         STAMP_DIR "${CMAKE_SOURCE_DIR}/build/host/gcc/release/tools/stamp"
         BINARY_DIR "${CMAKE_SOURCE_DIR}/build/host/gcc/release/tools"
         INSTALL_DIR "${CMAKE_SOURCE_DIR}/build/host/gcc/release/tools/install"
-        CMAKE_ARGS "--preset=gcc_release_tools"
+        CMAKE_ARGS "--preset=gcc_release_tools" "-DIROS_NeverLinkCompileCommands=ON"
         CMAKE_CACHE_ARGS "-DCMAKE_INSTALL_PREFIX:STRING=<INSTALL_DIR>"
         BUILD_ALWAYS YES
         STEP_TARGETS install
