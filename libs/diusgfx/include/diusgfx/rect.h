@@ -28,6 +28,11 @@ public:
     constexpr auto size() -> Size2d& { return m_size; }
     constexpr auto size() const -> Size2d { return m_size; }
 
+    constexpr auto left() const -> f32 { return x(); }
+    constexpr auto right() const -> f32 { return x() + width(); }
+    constexpr auto top() const -> f32 { return y(); }
+    constexpr auto bottom() const -> f32 { return y() + height(); }
+
     constexpr auto with_x(f32 x) const -> Rect { return { x, y(), width(), height() }; }
     constexpr auto with_y(f32 y) const -> Rect { return { x(), y, width(), height() }; }
     constexpr auto with_top_left(Point p) const -> Rect { return { p, size() }; }
@@ -36,9 +41,9 @@ public:
     constexpr auto with_height(f32 height) const -> Rect { return { x(), y(), width(), height }; }
     constexpr auto with_size(Size2d size) const -> Rect { return { top_left(), size }; }
 
-    constexpr auto top_right() const -> Point { return top_left().with_x(x() + width()); }
-    constexpr auto bottom_left() const -> Point { return top_left().with_y(y() + height()); }
-    constexpr auto bottom_right() const -> Point { return top_right().with_y(y() + height()); }
+    constexpr auto top_right() const -> Point { return top_left().with_x(right()); }
+    constexpr auto bottom_left() const -> Point { return top_left().with_y(bottom()); }
+    constexpr auto bottom_right() const -> Point { return top_right().with_y(bottom()); }
 
     constexpr auto center() const -> Point {
         auto result = top_left();

@@ -3,6 +3,10 @@
 #include <di/types/integers.h>
 #include <dius/print.h>
 #include <diusgfx/bitmap.h>
+#include <diusgfx/color.h>
+#include <diusgfx/painter.h>
+#include <diusgfx/point.h>
+#include <diusgfx/rect.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <syscall.h>
@@ -22,41 +26,20 @@ static wl_compositor* compositor;
 static wl_shm* shm;
 static xdg_wm_base* shell;
 
-void draw_rect(gfx::BitMap data, usize sx, usize sy, usize w, usize h, gfx::ARGBPixel color) {
-    for (auto y = sy; y < sy + h && y < data.height(); y++) {
-        for (auto x = sx; x < sx + w && x < data.width(); x++) {
-            data.argb_pixels()[y, x] = color;
-        }
-    }
-}
-
-void draw_circle(gfx::BitMap data, usize cx, usize cy, usize r, gfx::ARGBPixel color) {
-    auto sx = r > cx ? 0 : cx - r;
-    auto sy = r > cy ? 0 : cy - r;
-
-    for (auto y = sy; y <= cy + r && y < data.height(); y++) {
-        for (auto x = sx; x <= cx + r && x < data.width(); x++) {
-            auto dx = di::abs_diff(x, cx);
-            auto dy = di::abs_diff(y, cy);
-            if (dx * dx + dy * dy < r * r) {
-                data.argb_pixels()[y, x] = color;
-            }
-        }
-    }
-}
-
 void draw(gfx::BitMap data) {
+    auto painter = gfx::make_painter(data);
+
     // Clear
-    draw_rect(data, 0, 0, width, height, gfx::ARGBPixel(0, 0, 0, 255));
+    gfx::draw_rect(painter, gfx::Rect(0, 0, width, height), gfx::Color());
 
     // Moving rect.
     static usize x = 0;
-    draw_rect(data, x++, 100, 200, 200, gfx::ARGBPixel(255, 0, 0, 255));
+    gfx::draw_rect(painter, gfx::Rect(x++, 100, 200, 200), gfx::Color(255, 0, 0));
     x %= width;
 
     // Moving circle.
     static usize z = 100;
-    draw_circle(data, z++, 500, 100, gfx::ARGBPixel(0, 255, 0, 255));
+    gfx::draw_circle(painter, gfx::Point(z++, 500), 100, gfx::Color(0, 255, 0));
     z %= width;
 }
 
