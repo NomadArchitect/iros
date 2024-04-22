@@ -43,48 +43,52 @@
           };
         };
 
-        devShells.default = pkgs.mkShell {
-          packages =
-            [
-              config.treefmt.build.wrapper
-              pkgs.cmake-format
-            ]
-            ++ builtins.attrValues config.treefmt.build.programs
-            ++ [
-              pkgs.nil
-              pkgs.clang-tools_18
-              pkgs.neocmakelsp
-              pkgs.marksman
-              pkgs.markdownlint-cli
-              pkgs.dockerfile-language-server-nodejs
-              pkgs.yaml-language-server
-              pkgs.hadolint
-              (pkgs.writeShellScriptBin
-                "vscode-json-language-server"
-                ''${pkgs.nodePackages_latest.vscode-json-languageserver}/bin/vscode-json-languageserver "$@"'')
-            ]
-            ++ [
-              pkgs.clang_18
-              pkgs.cmake
-              pkgs.ninja
-              pkgs.bison
-              pkgs.flex
-              pkgs.doxygen
-              pkgs.graphviz
-              pkgs.mpfr
-              pkgs.gmp
-              pkgs.libmpc
-              pkgs.qemu
-              pkgs.ccache
-              pkgs.parted
-              pkgs.gcovr
-              pkgs.pipewire
-              pkgs.wayland-scanner
-              pkgs.wayland
-            ];
+        devShells.default = let
+          gccVersion = "13";
+          llvmVersion = "18";
+        in
+          pkgs.mkShell.override {stdenv = pkgs."gcc${gccVersion}Stdenv";} {
+            packages =
+              [
+                config.treefmt.build.wrapper
+                pkgs.cmake-format
+              ]
+              ++ builtins.attrValues config.treefmt.build.programs
+              ++ [
+                pkgs.nil
+                pkgs."clang-tools_${llvmVersion}"
+                pkgs.neocmakelsp
+                pkgs.marksman
+                pkgs.markdownlint-cli
+                pkgs.dockerfile-language-server-nodejs
+                pkgs.yaml-language-server
+                pkgs.hadolint
+                (pkgs.writeShellScriptBin
+                  "vscode-json-language-server"
+                  ''${pkgs.nodePackages_latest.vscode-json-languageserver}/bin/vscode-json-languageserver "$@"'')
+              ]
+              ++ [
+                pkgs."clang_${llvmVersion}"
+                pkgs.cmake
+                pkgs.ninja
+                pkgs.bison
+                pkgs.flex
+                pkgs.doxygen
+                pkgs.graphviz
+                pkgs.mpfr
+                pkgs.gmp
+                pkgs.libmpc
+                pkgs.qemu
+                pkgs.ccache
+                pkgs.parted
+                pkgs.gcovr
+                pkgs.pipewire
+                pkgs.wayland-scanner
+                pkgs.wayland
+              ];
 
-          hardeningDisable = ["format"];
-        };
+            hardeningDisable = ["format"];
+          };
       };
     };
 }

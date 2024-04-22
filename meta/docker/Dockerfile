@@ -1,4 +1,5 @@
-FROM ubuntu:latest as toolchain_build
+FROM ubuntu:24.04 as toolchain_build
+ARG GCC_VERSION=14
 RUN apt-get update -y \
     && apt-get install -y gpg software-properties-common wget \
     && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null \
@@ -12,8 +13,8 @@ RUN apt-get update -y && apt-get install -y \
     build-essential \
     ccache \
     flex \
-    g++-12 \
-    gcc-12 \
+    g++-$GCC_VERSION \
+    gcc-$GCC_VERSION \
     git \
     libgmp-dev \
     libisl-dev \
@@ -22,13 +23,14 @@ RUN apt-get update -y && apt-get install -y \
     ninja-build \
     texinfo \
     && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 900 --slave /usr/bin/g++ g++ /usr/bin/g++-12
-ADD / build/iros
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-$GCC_VERSION 900 --slave /usr/bin/g++ g++ /usr/bin/g++-$GCC_VERSION
+COPY / build/iros
 WORKDIR /build/iros
 RUN IROS_PREFIX="/usr/local" ./meta/toolchain/build.sh \
     && cd .. && rm -rf iros
 
-FROM ubuntu:latest as toolchain
+FROM ubuntu:24.04 as toolchain
+ARG GCC_VERSION=14
 RUN apt-get update -y \
     && apt-get install -y gpg software-properties-common wget \
     && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null \
@@ -41,8 +43,8 @@ RUN apt-get update -y && apt-get install -y \
     build-essential \
     ccache \
     dosfstools \
-    g++-12 \
-    gcc-12 \
+    g++-$GCC_VERSION \
+    gcc-$GCC_VERSION \
     git \
     graphviz \
     ninja-build \
@@ -52,7 +54,7 @@ RUN apt-get update -y && apt-get install -y \
     sudo \
     udev \
     && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 900 --slave /usr/bin/g++ g++ /usr/bin/g++-12  --slave /usr/bin/gcov gcov /usr/bin/gcov-12
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-$GCC_VERSION 900 --slave /usr/bin/g++ g++ /usr/bin/g++-$GCC_VERSION  --slave /usr/bin/gcov gcov /usr/bin/gcov-$GCC_VERSION
 COPY --from=toolchain_build /usr/local /usr/local
 WORKDIR /build/iros
 LABEL org.opencontainers.image.source="https://github.com/ColeTrammer/iros"

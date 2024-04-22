@@ -3,13 +3,15 @@ FROM ghcr.io/coletrammer/iros_toolchain:iris
 ARG USERNAME=iris
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
+ARG LLVM_VERSION=18
+ARG doxygen_version=1.10.0
 
 # Install clang
 RUN sudo apt-get -y update \
     && sudo apt-get -y install lsb-release wget software-properties-common gnupg \
     && wget https://apt.llvm.org/llvm.sh \
     && chmod +x llvm.sh \
-    && sudo ./llvm.sh 18 all \
+    && sudo ./llvm.sh ${LLVM_VERSION} all \
     && rm llvm.sh
 
 # Install dotnet runtime
@@ -27,7 +29,6 @@ RUN sudo apt-get -y install npm \
     && sudo npm install -g prettier
 
 # Install doxygen
-ARG doxygen_version=1.9.7
 RUN apt-get update -y \
     && wget https://www.doxygen.nl/files/doxygen-${doxygen_version}.linux.bin.tar.gz \
     && tar -xzf doxygen-${doxygen_version}.linux.bin.tar.gz \

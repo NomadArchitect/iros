@@ -17,8 +17,8 @@ any c++ language server. Currently, your best bet is to use `clangd`, as the pro
 which only `clang` and `gcc` support. The Microsoft C++ engine is not recommended, as it cannot compile the project's
 source code.
 
-In addition, the project requires at least GCC 12.1.0 or clang 16 and CMake 3.25.2 to compile. The CMake version can
-probably be relaxed, but GCC 11 will fail to compile the system. Likewise, clang-15 will not compile the system.
+In addition, the project requires at least GCC 14.1.0 or clang 18 and CMake 3.25.2 to compile. The CMake version can
+probably be relaxed, but GCC 13 will fail to compile the system. Likewise, clang-17 will not compile the system.
 Currently, the clang support is experimental, since there is not a custom toolchain target for llvm. Testing the kernel
 additionally requires various system commands, including `parted`, `mkfs.fat`, and `qemu`. A full list of packages
 needed under Ubuntu can be found in the
