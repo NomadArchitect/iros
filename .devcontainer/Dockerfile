@@ -9,7 +9,7 @@ RUN sudo apt-get -y update \
     && sudo apt-get -y install lsb-release wget software-properties-common gnupg \
     && wget https://apt.llvm.org/llvm.sh \
     && chmod +x llvm.sh \
-    && sudo ./llvm.sh 16 all \
+    && sudo ./llvm.sh 18 all \
     && rm llvm.sh
 
 # Install dotnet runtime

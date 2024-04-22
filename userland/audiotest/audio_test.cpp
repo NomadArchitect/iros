@@ -94,7 +94,17 @@ static void on_process(void* userdata) {
 
 static const struct pw_stream_events stream_events = {
     .version = PW_VERSION_STREAM_EVENTS,
+    .destroy = nullptr,
+    .state_changed = nullptr,
+    .control_info = nullptr,
+    .io_changed = nullptr,
+    .param_changed = nullptr,
+    .add_buffer = nullptr,
+    .remove_buffer = nullptr,
     .process = on_process,
+    .drained = nullptr,
+    .command = nullptr,
+    .trigger_done = nullptr,
 };
 
 static void do_quit(void* userdata, int) {

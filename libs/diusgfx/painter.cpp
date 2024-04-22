@@ -1,5 +1,3 @@
-#pragma once
-
 #include <di/function/tag_invoke.h>
 #include <di/math/abs_diff.h>
 #include <diusgfx/bitmap.h>

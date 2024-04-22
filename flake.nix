@@ -25,7 +25,10 @@
 
           programs = {
             alejandra.enable = true;
-            clang-format.enable = true;
+            clang-format = {
+              enable = true;
+              package = pkgs.clang-tools_18;
+            };
             prettier.enable = true;
             shfmt = {
               enable = true;
@@ -49,7 +52,7 @@
             ++ builtins.attrValues config.treefmt.build.programs
             ++ [
               pkgs.nil
-              pkgs.clang-tools
+              pkgs.clang-tools_18
               pkgs.neocmakelsp
               pkgs.marksman
               pkgs.markdownlint-cli
@@ -61,7 +64,7 @@
                 ''${pkgs.nodePackages_latest.vscode-json-languageserver}/bin/vscode-json-languageserver "$@"'')
             ]
             ++ [
-              pkgs.clang
+              pkgs.clang_18
               pkgs.cmake
               pkgs.ninja
               pkgs.bison
