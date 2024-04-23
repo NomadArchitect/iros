@@ -43,7 +43,7 @@ separate_arguments(IROS_SanitizerFlags)
 separate_arguments(IROS_ExtraFlags)
 separate_arguments(IROS_IrisFlags)
 
-set(as_subproject Di Dius Diusgfx Iris)
+set(as_subproject Di Dius Diusaudio Diusgfx Iris)
 
 macro(find_package)
     if(NOT "${ARGV0}" IN_LIST as_subproject)
@@ -100,14 +100,15 @@ if(IROS_BuildUserspace
 endif()
 
 if(IROS_BuildUserspace OR IROS_BuildLibraries)
+    add_subdirectory(libs/diusaudio)
     add_subdirectory(libs/diusgfx)
 endif()
 
 if(IROS_BuildUserspace)
+    add_subdirectory(userland/audiotest)
     add_subdirectory(userland/core)
     add_subdirectory(userland/shell)
     if(NOT IROS_UseDiusRuntime)
-        add_subdirectory(userland/audiotest)
         add_subdirectory(userland/gfxtest)
     endif()
 endif()

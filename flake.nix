@@ -85,6 +85,7 @@
                 pkgs.pipewire
                 pkgs.wayland-scanner
                 pkgs.wayland
+                pkgs.valgrind
               ];
 
             hardeningDisable = ["format"];
