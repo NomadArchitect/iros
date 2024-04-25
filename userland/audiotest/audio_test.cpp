@@ -3,10 +3,11 @@
 #include <di/container/algorithm/fill_n.h>
 #include <di/container/view/range.h>
 #include <di/function/monad/monad_try.h>
+#include <di/math/constants.h>
+#include <di/math/functions.h>
 #include <dius/main.h>
 #include <diusaudio/frame.h>
 #include <diusaudio/sink.h>
-#include <math.h>
 
 namespace audiotest {
 struct Args {
@@ -24,12 +25,12 @@ di::Result<void> main(Args&) {
         for (auto i : di::range(frame.sample_count())) {
             (void) i;
 
-            accumulator += 2 * M_PI * f / frame.sample_rate_hz();
-            if (accumulator >= 2 * M_PI) {
-                accumulator -= 2 * M_PI;
+            accumulator += 2 * di::numbers::pi * f / frame.sample_rate_hz();
+            if (accumulator >= 2 * di::numbers::pi) {
+                accumulator -= 2 * di::numbers::pi;
             }
 
-            auto val = sinf(accumulator) * 0.5;
+            auto val = di::sin(accumulator) * 0.5;
             out = di::fill_n(out, frame.channel_count(), val);
         }
         f++;
