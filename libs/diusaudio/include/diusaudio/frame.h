@@ -62,6 +62,8 @@ public:
         return { data, sample_count() * channel_count() };
     }
 
+    auto as_raw_bytes() const -> di::Span<byte> { return m_data; }
+
 private:
     di::Span<byte> m_data;
     u32 m_channel_count { 1 };
