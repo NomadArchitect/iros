@@ -1,3 +1,4 @@
+#include <diusaudio/frame_info.h>
 #ifdef DIUSAUDIO_HAVE_PIPEWIRE
 #include "pipewire.h"
 
@@ -59,7 +60,7 @@ void PipewireMainloop::register_signal_handler(u32 signo, di::Function<void()> f
     m_handlers[signo] = di::move(f);
 
     __extension__ pw_loop_add_signal(
-        raw_loop(), signo,
+        raw_loop(), (u32) signo,
         [](void* self, int signo) {
             static_cast<PipewireMainloop*>(self)->m_handlers[u32(signo)]();
         },
@@ -71,12 +72,8 @@ auto PipewireMainloop::raw_loop() const -> pw_loop* {
     return pw_main_loop_get_loop(m_loop);
 }
 
-PipewireStream::PipewireStream(PipewireMainloop& loop, SinkCallback callback, u32 channel_count, SampleFormat format,
-                               u32 sample_rate)
-    : m_sink_callback(di::move(callback))
-    , m_channel_count(channel_count)
-    , m_format(format)
-    , m_sample_rate(sample_rate) {
+PipewireStream::PipewireStream(PipewireMainloop& loop, SinkCallback callback, FrameInfo info)
+    : m_sink_callback(di::move(callback)), m_info(info) {
     auto* props = pw_properties_new(PW_KEY_MEDIA_TYPE, "Audio", PW_KEY_MEDIA_CATEGORY, "Playback", PW_KEY_MEDIA_ROLE,
                                     "Music", NULL);
 
@@ -93,11 +90,12 @@ PipewireStream::PipewireStream(PipewireMainloop& loop, SinkCallback callback, u3
 
         auto& data = buffer->buffer->datas[0];
 
-        auto byte_count = di::min(buffer->requested * self->m_channel_count * format_bytes_per_sample(self->m_format),
-                                  usize(data.maxsize));
+        auto byte_count =
+            di::min(buffer->requested * self->m_info.channel_count * format_bytes_per_sample(self->m_info.format),
+                    usize(data.maxsize));
         auto* byte_data = static_cast<byte*>(data.data);
 
-        auto frame = Frame({ byte_data, byte_count }, self->m_channel_count, self->m_format, self->m_sample_rate);
+        auto frame = Frame({ byte_data, byte_count }, self->m_info);
         self->m_sink_callback(frame);
 
         data.chunk->offset = 0;
@@ -107,7 +105,7 @@ PipewireStream::PipewireStream(PipewireMainloop& loop, SinkCallback callback, u3
         pw_stream_queue_buffer(self->m_stream, buffer);
     };
 
-    m_stream = pw_stream_new_simple(loop.raw_loop(), "audio-src", props, &events, this);
+    m_stream = pw_stream_new_simple(loop.raw_loop(), "audio-src-2", props, &events, this);
 }
 
 PipewireStream::~PipewireStream() {
@@ -120,11 +118,11 @@ void PipewireStream::connect() {
     DI_ASSERT(m_stream);
 
     auto audio_init = spa_audio_info_raw {};
-    audio_init.rate = m_sample_rate;
-    audio_init.channels = m_channel_count;
+    audio_init.rate = m_info.sample_rate_hz;
+    audio_init.channels = m_info.channel_count;
     audio_init.format = [&] {
         using enum SampleFormat;
-        switch (m_format) {
+        switch (m_info.format) {
             case SignedInt16LE:
                 return SPA_AUDIO_FORMAT_S16_LE;
             case SignedInt24LE:
@@ -155,9 +153,9 @@ void PipewireStream::connect() {
 
 class PipewireSink {
 public:
-    PipewireSink(SinkCallback callback, u32 channel_count, SampleFormat format, u32 sample_rate)
+    PipewireSink(SinkCallback callback, FrameInfo info)
         : m_loop(di::make_box<PipewireMainloop>())
-        , m_stream(di::make_box<PipewireStream>(*m_loop, di::move(callback), channel_count, format, sample_rate)) {}
+        , m_stream(di::make_box<PipewireStream>(*m_loop, di::move(callback), info)) {}
 
     friend void tag_invoke(di::Tag<start>, PipewireSink& self) {
         self.m_stream->connect();
@@ -172,9 +170,8 @@ private:
     di::Box<PipewireStream> m_stream;
 };
 
-auto make_pipewire_sink(SinkCallback callback, u32 channel_count, SampleFormat format,
-                        u32 sample_rate) -> di::Result<Sink> {
-    return PipewireSink(di::move(callback), channel_count, format, sample_rate);
+auto make_pipewire_sink(SinkCallback callback, FrameInfo info) -> di::Result<Sink> {
+    return PipewireSink(di::move(callback), info);
 }
 }
 #endif

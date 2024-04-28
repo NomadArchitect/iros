@@ -8,6 +8,7 @@
 #include <di/types/integers.h>
 #include <di/vocab/error/result.h>
 #include <diusaudio/frame.h>
+#include <diusaudio/frame_info.h>
 
 namespace audio {
 namespace sink {
@@ -23,6 +24,5 @@ using Sink = di::Any<sink::SinkInterface>;
 constexpr inline auto start = sink::Start {};
 constexpr inline auto stop = sink::Stop {};
 
-auto make_sink(SinkCallback callback, u32 channel_count = 1, SampleFormat format = SampleFormat::Float32LE,
-               u32 sample_rate = 44100) -> di::Result<Sink>;
+auto make_sink(SinkCallback callback, FrameInfo info = {}) -> di::Result<Sink>;
 }

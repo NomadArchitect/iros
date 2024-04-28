@@ -8,7 +8,6 @@
 #include <di/function/monad/monad_try.h>
 #include <di/math/constants.h>
 #include <di/math/functions.h>
-#include <di/vocab/optional/optional_forward_declaration.h>
 #include <dius/main.h>
 #include <dius/print.h>
 #include <dius/system/process.h>
@@ -30,6 +29,9 @@ di::Result<void> main(Args& args) {
     if (args.wav_file) {
         auto result = TRY(audio::formats::parse_wav(*args.wav_file));
 
+        dius::println("Playing WAV file with info {}, duration {}s"_sv, result.frame.info(),
+                      result.frame.sample_count() / result.frame.sample_rate_hz());
+
         auto bytes_index = 0;
         auto sink = TRY(audio::make_sink(
             [&](audio::Frame frame) {
@@ -42,7 +44,7 @@ di::Result<void> main(Args& args) {
                     dius::system::exit_process(0);
                 }
             },
-            result.frame.channel_count(), result.frame.format(), result.frame.sample_rate_hz()));
+            result.frame.info()));
 
         audio::start(sink);
 

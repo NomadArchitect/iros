@@ -7,6 +7,7 @@
 #include <di/util/noncopyable.h>
 #include <di/vocab/error/result.h>
 #include <diusaudio/frame.h>
+#include <diusaudio/frame_info.h>
 #include <diusaudio/sink.h>
 #include <pipewire/loop.h>
 #include <pipewire/main-loop.h>
@@ -42,8 +43,7 @@ private:
 
 class PipewireStream : di::Immovable {
 public:
-    explicit PipewireStream(PipewireMainloop& loop, SinkCallback callback, u32 channel_count, SampleFormat format,
-                            u32 sample_rate);
+    explicit PipewireStream(PipewireMainloop& loop, SinkCallback callback, FrameInfo info);
     ~PipewireStream();
 
     void connect();
@@ -51,12 +51,8 @@ public:
 private:
     pw_stream* m_stream { nullptr };
     SinkCallback m_sink_callback;
-
-    u32 m_channel_count { 1 };
-    SampleFormat m_format { SampleFormat::Float32LE };
-    u32 m_sample_rate { 44100 };
+    FrameInfo m_info;
 };
 
-auto make_pipewire_sink(SinkCallback callback, u32 channel_count, SampleFormat format,
-                        u32 sample_rate) -> di::Result<Sink>;
+auto make_pipewire_sink(SinkCallback callback, FrameInfo info) -> di::Result<Sink>;
 }

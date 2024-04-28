@@ -48,7 +48,6 @@ auto parse_wav([[gnu::unused]] di::PathView path) -> di::Result<Frame> {
         return di::Unexpected(di::BasicError::InvalidArgument);
     }
 
-    dius::eprintln("Chunk size: {}"_sv, header->chunk_size);
     if (header->chunk_size > bytes.size()) {
         return di::Unexpected(di::BasicError::InvalidArgument);
     }
@@ -69,13 +68,6 @@ auto parse_wav([[gnu::unused]] di::PathView path) -> di::Result<Frame> {
         return di::Unexpected(di::BasicError::InvalidArgument);
     }
 
-    dius::eprintln("Format: {}"_sv, (*format)->format_code);
-    dius::eprintln("Format size: {}"_sv, (*format)->chunk_size);
-    dius::eprintln("Channels: {}"_sv, (*format)->channel_count);
-    dius::eprintln("Rate: {}"_sv, (*format)->sample_rate);
-    dius::eprintln("Bits per sample: {}"_sv, (*format)->bits_per_sample);
-    dius::eprintln("Data block size: {}"_sv, (*format)->data_block_size);
-
     if ((*format)->format_code != 1 || (*format)->bits_per_sample != 16) {
         return di::Unexpected(di::BasicError::InvalidArgument);
     }
@@ -94,8 +86,6 @@ auto parse_wav([[gnu::unused]] di::PathView path) -> di::Result<Frame> {
         return di::Unexpected(di::BasicError::InvalidArgument);
     }
 
-    dius::eprintln("Wav data size: {}"_sv, (*wav_data_header)->chunk_size);
-
     auto data_offset = sizeof(WavHeader) + sizeof(WavFmt) + sizeof(WavDataHeader);
     auto data_size = (*wav_data_header)->chunk_size;
     if (data_offset + data_size > bytes.size()) {
@@ -109,8 +99,8 @@ auto parse_wav([[gnu::unused]] di::PathView path) -> di::Result<Frame> {
     result.data->reserve(data.size());
     result.data->append_container(data);
 
-    result.frame =
-        Frame(result.data->span(), (*format)->channel_count, SampleFormat::SignedInt16LE, (*format)->sample_rate);
+    result.frame = Frame(result.data->span(),
+                         FrameInfo((*format)->channel_count, SampleFormat::SignedInt16LE, (*format)->sample_rate));
 
     return result;
 }
