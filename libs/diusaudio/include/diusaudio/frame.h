@@ -37,25 +37,25 @@ namespace frame {
         constexpr auto stride() const -> usize { return bytes_per_sample() * channel_count(); }
         constexpr auto byte_count() const -> usize { return sample_count() * stride(); }
 
-        auto as_float32_le() const -> di::Span<di::meta::MaybeConst<is_const, f32>> {
+        auto as_float32_le() const {
             ASSERT_EQ(format(), SampleFormat::Float32LE);
             auto* data = reinterpret_cast<di::meta::MaybeConst<is_const, f32>*>(as_raw_bytes().data());
-            return { data, sample_count() * channel_count() };
+            return di::Span { data, sample_count() * channel_count() };
         }
 
-        auto as_signed_int16_le() const -> di::Span<di::meta::MaybeConst<is_const, i16>> {
+        auto as_signed_int16_le() const {
             ASSERT_EQ(format(), SampleFormat::SignedInt16LE);
             auto* data = reinterpret_cast<di::meta::MaybeConst<is_const, i16>*>(as_raw_bytes().data());
-            return { data, sample_count() * channel_count() };
+            return di::Span { data, sample_count() * channel_count() };
         }
 
-        auto as_signed_int32_le() const -> di::Span<di::meta::MaybeConst<is_const, i32>> {
+        auto as_signed_int32_le() const {
             ASSERT_EQ(format(), SampleFormat::SignedInt32LE);
             auto* data = reinterpret_cast<di::meta::MaybeConst<is_const, i32>*>(as_raw_bytes().data());
-            return { data, sample_count() * channel_count() };
+            return di::Span { data, sample_count() * channel_count() };
         }
 
-        auto as_raw_bytes() const -> di::Span<di::meta::MaybeConst<is_const, byte>> { return m_buffer.span(); }
+        constexpr auto as_raw_bytes() const { return m_buffer.span(); }
 
         constexpr auto shrink_to_first_n_samples(usize count)
         requires(!is_const)

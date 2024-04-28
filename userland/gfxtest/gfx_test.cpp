@@ -1,6 +1,7 @@
 #include <di/container/string/string_view.h>
 #include <di/math/abs_diff.h>
 #include <di/types/integers.h>
+#include <di/vocab/bytes/byte_buffer.h>
 #include <dius/print.h>
 #include <diusgfx/bitmap.h>
 #include <diusgfx/color.h>
@@ -26,9 +27,7 @@ static wl_compositor* compositor;
 static wl_shm* shm;
 static xdg_wm_base* shell;
 
-void draw(gfx::BitMap data) {
-    auto painter = gfx::make_painter(data);
-
+void draw(gfx::Painter& painter) {
     // Clear
     gfx::draw_rect(painter, gfx::Rect(0, 0, width, height), gfx::Color());
 
@@ -102,9 +101,12 @@ int main() {
     }
 
     auto* data = (byte*) mmap(nullptr, size * 2, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    auto bitmap1 = gfx::BitMap({ data, size }, width, height);
-    auto bitmap2 = gfx::BitMap({ data + size, size }, width, height);
-    draw(bitmap1);
+    auto bitmap1 = gfx::ExclusiveBitMap(di::ExclusiveByteBuffer(di::Span { data, size }), width, height);
+    auto bitmap2 = gfx::ExclusiveBitMap(di::ExclusiveByteBuffer(di::Span { data + size, size }), width, height);
+
+    auto painter1 = gfx::make_painter(di::move(bitmap1));
+    auto painter2 = gfx::make_painter(di::move(bitmap2));
+    draw(painter1);
 
     wl_shm_pool* pool = wl_shm_create_pool(shm, fd, size * 2);
     wl_buffer* buffer = wl_shm_pool_create_buffer(pool, 0, width, height, stride, WL_SHM_FORMAT_ARGB8888);
@@ -153,10 +155,10 @@ int main() {
         wl_display_dispatch(display);
 
         if (use2) {
-            draw(bitmap2);
+            draw(painter2);
             wl_surface_attach(surface, buffer2, 0, 0);
         } else {
-            draw(bitmap1);
+            draw(painter1);
             wl_surface_attach(surface, buffer, 0, 0);
         }
         wl_surface_damage_buffer(surface, 0, 0, width, height);

@@ -22,5 +22,5 @@ using Painter = di::Any<painter::PainterInterface>;
 constexpr inline auto draw_rect = painter::DrawRect {};
 constexpr inline auto draw_circle = painter::DrawCircle {};
 
-auto make_painter(BitMap bitmap) -> Painter;
+auto make_painter(ExclusiveBitMap bitmap) -> Painter;
 }

@@ -6,7 +6,7 @@
 namespace gfx {
 class SimplePainter {
 public:
-    constexpr explicit SimplePainter(BitMap bitmap) : m_bitmap(bitmap) {}
+    explicit SimplePainter(ExclusiveBitMap bitmap) : m_bitmap(di::move(bitmap)) {}
 
 private:
     friend void tag_invoke(di::Tag<draw_rect>, SimplePainter& self, Rect rect, Color color) {
@@ -47,10 +47,10 @@ private:
         }
     }
 
-    BitMap m_bitmap;
+    ExclusiveBitMap m_bitmap;
 };
 
-auto make_painter(BitMap bitmap) -> Painter {
-    return SimplePainter(bitmap);
+auto make_painter(ExclusiveBitMap bitmap) -> Painter {
+    return SimplePainter(di::move(bitmap));
 }
 }
