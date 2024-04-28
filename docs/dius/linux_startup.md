@@ -8,7 +8,7 @@ runtime. This assumes a statically linked executable for now.
 The entry point for the program is the is the symbol `_start`. argc, argv, and envp are arranged on the stack as
 follows.
 
-```
+```txt
 +----------------+
 | ...            |
 | elf aux vec    |
