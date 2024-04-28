@@ -18,7 +18,7 @@ namespace sink {
     using SinkInterface = di::meta::List<Start, Stop>;
 }
 
-using SinkCallback = di::Function<void(Frame)>;
+using SinkCallback = di::Function<void(ExclusiveFrame&)>;
 using Sink = di::Any<sink::SinkInterface>;
 
 constexpr inline auto start = sink::Start {};

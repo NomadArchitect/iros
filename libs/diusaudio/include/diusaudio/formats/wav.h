@@ -7,10 +7,5 @@
 #include <diusaudio/frame.h>
 
 namespace audio::formats {
-struct WavResult {
-    di::Box<di::Vector<byte>> data;
-    Frame frame;
-};
-
-auto parse_wav(di::PathView path) -> di::Result<WavResult>;
+auto parse_wav(di::PathView path) -> di::Result<Frame>;
 }

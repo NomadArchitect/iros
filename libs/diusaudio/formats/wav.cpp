@@ -3,24 +3,20 @@
 #include <di/platform/custom.h>
 #include <di/util/uuid.h>
 #include <di/vocab/array/array.h>
+#include <di/vocab/bytes/byte_buffer.h>
 #include <di/vocab/expected/expected.h>
 #include <di/vocab/pointer/box.h>
 #include <dius/filesystem/query/file_size.h>
 #include <dius/print.h>
 #include <dius/sync_file.h>
 #include <diusaudio/formats/wav.h>
+#include <diusaudio/frame_info.h>
 
 namespace audio::formats {
-<<<<<<< HEAD
-auto parse_wav(di::PathView path) -> di::Result<WavResult> {
-||||||| parent of aab2f3c1b (xxx)
-auto parse_wav(di::PathView path) -> di::Result<Frame> {
-=======
 auto parse_wav([[gnu::unused]] di::PathView path) -> di::Result<Frame> {
 #ifdef __iros__
     return di::Unexpected(di::BasicError::NotSupported);
 #else
->>>>>>> aab2f3c1b (xxx)
     auto file = TRY(dius::open_sync(path, dius::OpenMode::Readonly));
 
     // FIXME: this is an obvious race condition with opening the file.
@@ -92,16 +88,9 @@ auto parse_wav([[gnu::unused]] di::PathView path) -> di::Result<Frame> {
         return di::Unexpected(di::BasicError::InvalidArgument);
     }
 
-    auto data = *bytes.subspan(data_offset, data_size);
-
-    auto result = WavResult {};
-    result.data = di::make_box<di::Vector<byte>>();
-    result.data->reserve(data.size());
-    result.data->append_container(data);
-
-    result.frame = Frame(result.data->span(),
-                         FrameInfo((*format)->channel_count, SampleFormat::SignedInt16LE, (*format)->sample_rate));
-
-    return result;
+    auto buffer = di::ByteBuffer(di::move(contents));
+    return Frame(*buffer.slice(data_offset, data_size),
+                 FrameInfo((*format)->channel_count, SampleFormat::SignedInt16LE, (*format)->sample_rate));
+#endif
 }
 }

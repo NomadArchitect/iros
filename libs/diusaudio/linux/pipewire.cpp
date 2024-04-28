@@ -1,3 +1,4 @@
+#include <di/vocab/bytes/byte_buffer.h>
 #include <diusaudio/frame_info.h>
 #ifdef DIUSAUDIO_HAVE_PIPEWIRE
 #include "pipewire.h"
@@ -60,7 +61,7 @@ void PipewireMainloop::register_signal_handler(u32 signo, di::Function<void()> f
     m_handlers[signo] = di::move(f);
 
     __extension__ pw_loop_add_signal(
-        raw_loop(), (u32) signo,
+        raw_loop(), (int) signo,
         [](void* self, int signo) {
             static_cast<PipewireMainloop*>(self)->m_handlers[u32(signo)]();
         },
@@ -95,12 +96,13 @@ PipewireStream::PipewireStream(PipewireMainloop& loop, SinkCallback callback, Fr
                     usize(data.maxsize));
         auto* byte_data = static_cast<byte*>(data.data);
 
-        auto frame = Frame({ byte_data, byte_count }, self->m_info);
+        // NOTE: this is safe because pipewire manages the memory for us.
+        auto frame = ExclusiveFrame(di::ExclusiveByteBuffer(di::Span { byte_data, byte_count }), self->m_info);
         self->m_sink_callback(frame);
 
         data.chunk->offset = 0;
         data.chunk->stride = (i32) frame.stride();
-        data.chunk->size = frame.stride() * frame.sample_count();
+        data.chunk->size = frame.byte_count();
 
         pw_stream_queue_buffer(self->m_stream, buffer);
     };
