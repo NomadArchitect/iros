@@ -87,7 +87,7 @@ if(IROS_BuildIris)
     ExternalProject_Add(
         limine
         GIT_REPOSITORY https://github.com/limine-bootloader/limine.git
-        GIT_TAG v4.x-branch-binary
+        GIT_TAG v7.x-binary
         GIT_SHALLOW TRUE
         TMP_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/limine/tmp"
         STAMP_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/limine/stamp"

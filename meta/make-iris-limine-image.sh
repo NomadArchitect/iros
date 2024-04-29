@@ -26,7 +26,7 @@ parted -s -- "$IMAGE" \
     mkpart ESP fat32 2048s 100% \
     set 1 esp on
 
-"$IROS_LIMINE_DIR"/limine-deploy "$IMAGE"
+"$IROS_LIMINE_DIR"/limine bios-install "$IMAGE"
 
 cleanup() {
     sync || true
@@ -96,7 +96,7 @@ mount "$LOOP_DEV"p1 "$IROS_BUILD_DIR/mnt"
 
 sudo mkdir -p "$IROS_BUILD_DIR"/mnt/EFI/BOOT
 sudo objcopy -g "$IROS_BUILD_DIR"/iris/iris "$IROS_BUILD_DIR"/mnt/iris
-sudo cp "$INITRD" "$LIMINE_CFG" "$IROS_LIMINE_DIR"/limine.sys "$IROS_BUILD_DIR"/mnt
+sudo cp "$INITRD" "$LIMINE_CFG" "$IROS_LIMINE_DIR"/limine-bios.sys "$IROS_BUILD_DIR"/mnt
 sudo cp "$IROS_LIMINE_DIR"/BOOTX64.EFI "$IROS_BUILD_DIR"/mnt/EFI/BOOT
 
 chmod 777 "$IMAGE"
