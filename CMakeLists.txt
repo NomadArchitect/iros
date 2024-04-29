@@ -136,7 +136,8 @@ endif()
 if(IROS_NonUnityBuildPreset)
     # Generate compile_commands.json using a non-unity build to greatly improve IDE tooling.
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --preset "${IROS_NonUnityBuildPreset}" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        COMMAND ${CMAKE_COMMAND} --preset "${IROS_NonUnityBuildPreset}" "-DIROS_NeverLinkCompileCommands=ON"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     )
     file(COPY "${CMAKE_BINARY_DIR}/non_unity/compile_commands.json" DESTINATION "${CMAKE_BINARY_DIR}")
 endif()
