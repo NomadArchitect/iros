@@ -1,18 +1,15 @@
-From 9a710f86b586f87df8bd86f20846f923b5cc49c6 Mon Sep 17 00:00:00 2001
+From 23d34ee60ab64711476408b8b25a463c593a70a0 Mon Sep 17 00:00:00 2001
 From: ColeTrammer <cole.trammer@gmail.com>
-Date: Sun, 19 Feb 2023 01:21:22 -0800
-Subject: [PATCH 1/3] Add support for Iros to the gcc compiler proper and
- libgcc
+Date: Wed, 1 May 2024 22:37:48 -0700
+Subject: [PATCH 1/4] Add GCC driver for Iros
 
 ---
- config.sub                  |  2 +-
- fixincludes/mkfixinc.sh     |  1 +
- gcc/config.gcc              | 19 ++++++++++++++++++-
- gcc/config/iros.h           | 33 +++++++++++++++++++++++++++++++++
- gcc/configure.ac            |  3 +++
- libgcc/config.host          | 10 ++++++++++
- libgcc/unwind-dw2-fde-dip.c |  6 ++++++
- 7 files changed, 72 insertions(+), 2 deletions(-)
+ config.sub              |  2 +-
+ fixincludes/mkfixinc.sh |  1 +
+ gcc/config.gcc          | 12 ++++++++++++
+ gcc/config/iros.h       | 33 +++++++++++++++++++++++++++++++++
+ gcc/configure.ac        |  3 +++
+ 5 files changed, 50 insertions(+), 1 deletion(-)
  create mode 100644 gcc/config/iros.h
 
 diff --git a/config.sub b/config.sub
@@ -41,21 +38,12 @@ index df90720b716..7911274f791 100755
      *-musl* )
  	#  IF there is no include fixing,
 diff --git a/gcc/config.gcc b/gcc/config.gcc
-index 6fd1594480a..73fcdcc703d 100644
+index 95c91ee02be..6e7cd2907a1 100644
 --- a/gcc/config.gcc
 +++ b/gcc/config.gcc
-@@ -181,7 +181,7 @@
- #			the --with-sysroot configure option or the
- #			--sysroot command line option is used this
- #			will be relative to the sysroot.
--# target_type_format_char 
-+# target_type_format_char
- # 			The default character to be used for formatting
- #			the attribute in a
- #			.type symbol_name, ${t_t_f_c}<property>
-@@ -843,6 +843,13 @@ case ${target} in
- *-*-fuchsia*)
-   native_system_header_dir=/include
+@@ -884,6 +884,13 @@ case ${target} in
+   rust_target_objs="${rust_target_objs} fuchsia-rust.o"
+   target_has_targetrustm=yes
    ;;
 +*-*-iros*)
 +  gas=yes
@@ -67,15 +55,10 @@ index 6fd1594480a..73fcdcc703d 100644
  *-*-linux* | frv-*-*linux* | *-*-kfreebsd*-gnu | *-*-gnu* | *-*-kopensolaris*-gnu | *-*-uclinuxfdpiceabi)
    extra_options="$extra_options gnu-user.opt"
    gas=yes
-@@ -1913,6 +1920,16 @@ x86_64-*-openbsd*)
+@@ -1981,6 +1988,11 @@ x86_64-*-openbsd*)
  	gas=yes
  	gnu_ld=yes
  	;;
-+i[34567]86-*-iros*)
-+    tm_file="${tm_file} i386/unix.h i386/att.h elfos.h glibc-stdint.h i386/i386elf.h iros.h"
-+	tmake_file="${tmake_file} t-slibgcc"
-+	extra_options="${extra_options} gnu-user.opt"
-+    ;;
 +x86_64-*-iros*)
 +    tm_file="${tm_file} i386/unix.h i386/att.h elfos.h glibc-stdint.h i386/i386elf.h i386/x86-64.h iros.h"
 +	tmake_file="${tmake_file} t-slibgcc"
@@ -124,10 +107,10 @@ index 00000000000..5df344f41cd
 +        builtin_assert("system=posix"); \
 +    } while (0);
 diff --git a/gcc/configure.ac b/gcc/configure.ac
-index 09082e8ccae..e6925e0ac80 100644
+index d7cf0b92cd8..398910636a8 100644
 --- a/gcc/configure.ac
 +++ b/gcc/configure.ac
-@@ -6939,6 +6939,9 @@ case "$target" in
+@@ -7172,6 +7172,9 @@ case "$target" in
    *-linux-musl*)
      gcc_cv_target_dl_iterate_phdr=yes
      ;;
@@ -137,44 +120,6 @@ index 09082e8ccae..e6925e0ac80 100644
  esac
  GCC_TARGET_TEMPLATE([TARGET_DL_ITERATE_PHDR])
  if test x$gcc_cv_target_dl_iterate_phdr = xyes; then
-diff --git a/libgcc/config.host b/libgcc/config.host
-index b9975de9023..7152df613b0 100644
---- a/libgcc/config.host
-+++ b/libgcc/config.host
-@@ -723,6 +723,16 @@ i[34567]86-*-openbsd*)
- 	;;
- x86_64-*-openbsd*)
- 	;;
-+i[34567]86-*-iros*)
-+	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtend.o crtendS.o crtn.o"
-+	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-gld-nover t-eh-dw2-dip"
-+	tm_file="${tm_file} i386/elf-lib.h"
-+	;;
-+x86_64-*-iros*)
-+	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtend.o crtendS.o crtn.o"
-+	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-gld-nover t-eh-dw2-dip"
-+	tm_file="${tm_file} i386/elf-lib.h"
-+	;;
- i[34567]86-*-linux*)
- 	extra_parts="$extra_parts crtprec32.o crtprec64.o crtprec80.o crtfastmath.o"
- 	tmake_file="${tmake_file} i386/t-crtpc t-crtfm i386/t-crtstuff t-dfprules"
-diff --git a/libgcc/unwind-dw2-fde-dip.c b/libgcc/unwind-dw2-fde-dip.c
-index 6223f5f18a2..b8aa08eb470 100644
---- a/libgcc/unwind-dw2-fde-dip.c
-+++ b/libgcc/unwind-dw2-fde-dip.c
-@@ -83,6 +83,12 @@
- # define USE_PT_GNU_EH_FRAME
- #endif
- 
-+#if !defined(inihibit_libc) && defined(HAVE_LD_EH_FRAME_HDR) \
-+    && defined(TARGET_DL_ITERATE_PHDR) \
-+    && defined(__iros__)
-+# define USE_PT_GNU_EH_FRAME
-+#endif
-+
- #if defined(USE_PT_GNU_EH_FRAME)
- 
- #include <link.h>
--- 
-2.34.1
+--
+2.44.0
 

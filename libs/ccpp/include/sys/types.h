@@ -9,6 +9,10 @@
 #include <ccpp/bits/intptr_t.h>
 #include <ccpp/bits/mode_t.h>
 #include <ccpp/bits/nlink_t.h>
+#include <ccpp/bits/off_t.h>
+#include <ccpp/bits/pid_t.h>
+#include <ccpp/bits/size_t.h>
+#include <ccpp/bits/ssize_t.h>
 #include <ccpp/bits/suseconds_t.h>
 #include <ccpp/bits/time_t.h>
 #include <ccpp/bits/uid_t.h>

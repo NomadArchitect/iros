@@ -12,6 +12,7 @@ RUN apt-get update -y && apt-get install -y \
     bison \
     build-essential \
     ccache \
+    curl \
     flex \
     g++-$GCC_VERSION \
     gcc-$GCC_VERSION \
@@ -20,6 +21,7 @@ RUN apt-get update -y && apt-get install -y \
     libisl-dev \
     libmpc-dev \
     libmpfr-dev \
+    autoconf2.69 \
     ninja-build \
     texinfo \
     && rm -rf /var/lib/apt/lists/* \

@@ -1,0 +1,29 @@
+From 9a201ef530112911721b761409bd84da37bd20d1 Mon Sep 17 00:00:00 2001
+From: ColeTrammer <cole.trammer@gmail.com>
+Date: Wed, 1 May 2024 22:45:37 -0700
+Subject: [PATCH 4/4] Add libstdc++ support for Iros
+
+---
+ libstdc++-v3/crossconfig.m4 | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/libstdc++-v3/crossconfig.m4 b/libstdc++-v3/crossconfig.m4
+index b3269cb88e0..9a719825242 100644
+--- a/libstdc++-v3/crossconfig.m4
++++ b/libstdc++-v3/crossconfig.m4
+@@ -198,6 +198,12 @@ case "${host}" in
+     AC_CHECK_FUNCS(_wfopen)
+     GCC_CHECK_TLS
+     ;;
++  *-iros*)
++    GLIBCXX_CHECK_COMPILER_FEATURES
++    GLIBCXX_CHECK_LINKER_FEATURES
++    GLIBCXX_CHECK_MATH_SUPPORT
++    GLIBCXX_CHECK_STDLIB_SUPPORT
++    ;;
+   *-netbsd* | *-openbsd*)
+     SECTION_FLAGS='-ffunction-sections -fdata-sections'
+     AC_SUBST(SECTION_FLAGS) 
+-- 
+2.44.0
+

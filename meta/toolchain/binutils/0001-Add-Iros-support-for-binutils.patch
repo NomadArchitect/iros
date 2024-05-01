@@ -1,26 +1,26 @@
-From 3041c429594bed463ce8e8b030d00f4268e61652 Mon Sep 17 00:00:00 2001
+From e043766efcc3585d60b67febe74d74532a8d22c9 Mon Sep 17 00:00:00 2001
 From: ColeTrammer <cole.trammer@gmail.com>
-Date: Sat, 18 Feb 2023 23:49:01 -0800
-Subject: [PATCH] Add Iros support for binutils 2-40
+Date: Wed, 1 May 2024 21:57:29 -0700
+Subject: [PATCH] Add Iros support for binutils
 
 ---
  bfd/config.bfd                   | 10 ++++++++++
  config.sub                       |  2 +-
  gas/configure.tgt                |  1 +
- ld/Makefile.am                   |  2 ++
+ ld/Makefile.am                   |  1 -
  ld/Makefile.in                   |  2 ++
  ld/configure.tgt                 |  3 +++
  ld/emulparams/elf_i386_iros.sh   |  1 +
  ld/emulparams/elf_x86_64_iros.sh |  1 +
- 8 files changed, 21 insertions(+), 1 deletion(-)
+ 8 files changed, 19 insertions(+), 2 deletions(-)
  create mode 100644 ld/emulparams/elf_i386_iros.sh
  create mode 100644 ld/emulparams/elf_x86_64_iros.sh
 
 diff --git a/bfd/config.bfd b/bfd/config.bfd
-index 1b0111fd410..ef285eb6fed 100644
+index bbf12447517..69983164167 100644
 --- a/bfd/config.bfd
 +++ b/bfd/config.bfd
-@@ -656,6 +656,11 @@ case "${targ}" in
+@@ -655,6 +655,11 @@ case "${targ}" in
      targ_defvec=i386_elf32_vec
      targ_selvecs="iamcu_elf32_vec"
      ;;
@@ -32,7 +32,7 @@ index 1b0111fd410..ef285eb6fed 100644
    i[3-7]86-*-linux-*)
      targ_defvec=i386_elf32_vec
      targ_selvecs="iamcu_elf32_vec i386_pei_vec"
-@@ -711,6 +716,11 @@ case "${targ}" in
+@@ -710,6 +715,11 @@ case "${targ}" in
      targ_selvecs="i386_elf32_vec iamcu_elf32_vec i386_coff_vec i386_pei_vec x86_64_pe_vec x86_64_pei_vec"
      want64=true
      ;;
@@ -45,23 +45,23 @@ index 1b0111fd410..ef285eb6fed 100644
      targ_defvec=x86_64_elf64_vec
      targ_selvecs="i386_elf32_vec iamcu_elf32_vec x86_64_elf32_vec i386_pei_vec x86_64_pe_vec x86_64_pei_vec"
 diff --git a/config.sub b/config.sub
-index dba16e84c77..76d8330b9f2 100755
+index defe52c0c87..75b89b9ca22 100755
 --- a/config.sub
 +++ b/config.sub
-@@ -1728,7 +1728,7 @@ case $os in
+@@ -1740,7 +1740,7 @@ case $os in
  	     | hpux* | unos* | osf* | luna* | dgux* | auroraux* | solaris* \
  	     | sym* |  plan9* | psp* | sim* | xray* | os68k* | v88r* \
  	     | hiux* | abug | nacl* | netware* | windows* \
--	     | os9* | macos* | osx* | ios* \
-+	     | os9* | macos* | osx* | ios* | iros* \
+-	     | os9* | macos* | osx* | ios* | tvos* | watchos* \
++	     | os9* | macos* | osx* | ios* | iros* | tvos* | watchos* \
  	     | mpw* | magic* | mmixware* | mon960* | lnews* \
  	     | amigaos* | amigados* | msdos* | newsos* | unicos* | aof* \
  	     | aos* | aros* | cloudabi* | sortix* | twizzler* \
 diff --git a/gas/configure.tgt b/gas/configure.tgt
-index 765ba73633d..438ea3e66ea 100644
+index 7c66734e362..ce81f4629ed 100644
 --- a/gas/configure.tgt
 +++ b/gas/configure.tgt
-@@ -234,6 +234,7 @@ case ${generic_target} in
+@@ -237,6 +237,7 @@ case ${generic_target} in
    i386-*-knetbsd*-gnu | \
    i386-*-netbsd* | \
    i386-*-openbsd*)			fmt=elf em=nbsd ;;
@@ -70,30 +70,22 @@ index 765ba73633d..438ea3e66ea 100644
      case ${cpu}-${os} in
        x86_64*-linux-gnux32)		arch=x86_64:32 ;;
 diff --git a/ld/Makefile.am b/ld/Makefile.am
-index 12b2c3c453f..8d1925d36ce 100644
+index f9ee05b1400..4e70dd6063a 100644
 --- a/ld/Makefile.am
 +++ b/ld/Makefile.am
-@@ -773,6 +773,7 @@ $(ALL_EMULATION_SOURCES) $(ALL_64_EMULATION_SOURCES): $(GEN_DEPENDS)
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_be.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_fbsd.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_haiku.Pc@am__quote@
-+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_iros.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_ldso.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_sol2.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_vxworks.Pc@am__quote@
-@@ -949,6 +950,7 @@ $(ALL_EMULATION_SOURCES) $(ALL_64_EMULATION_SOURCES): $(GEN_DEPENDS)
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_cloudabi.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_fbsd.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_haiku.Pc@am__quote@
-+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_iros.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_sol2.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ehppa64linux.Pc@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ei386pep.Pc@am__quote@
+@@ -645,7 +645,6 @@ $(ALL_EMULATION_SOURCES) $(ALL_64_EMULATION_SOURCES): $(GEN_DEPENDS)
+ #For example, we don't want e.deps/emmo.Pc.c to be tried when
+ #.deps/emmo.Pc is missing.
+ %.Pc:
+-
+ @AMDEP_TRUE@-include $(patsubst %.c,./$(DEPDIR)/%.Pc,$(ALL_EMULATION_SOURCES) $(ALL_64_EMULATION_SOURCES))
+ 
+ # We need this for automake to use YLWRAP.
 diff --git a/ld/Makefile.in b/ld/Makefile.in
-index 3d5685d6bae..85d1af40c3b 100644
+index abb0565718f..c4dfa5309b0 100644
 --- a/ld/Makefile.in
 +++ b/ld/Makefile.in
-@@ -779,6 +779,7 @@ ALL_EMULATION_SOURCES = \
+@@ -791,6 +791,7 @@ ALL_EMULATION_SOURCES = \
  	eelf_i386_be.c \
  	eelf_i386_fbsd.c \
  	eelf_i386_haiku.c \
@@ -101,7 +93,7 @@ index 3d5685d6bae..85d1af40c3b 100644
  	eelf_i386_ldso.c \
  	eelf_i386_sol2.c \
  	eelf_i386_vxworks.c \
-@@ -957,6 +958,7 @@ ALL_64_EMULATION_SOURCES = \
+@@ -974,6 +975,7 @@ ALL_64_EMULATION_SOURCES = \
  	eelf_x86_64_cloudabi.c \
  	eelf_x86_64_fbsd.c \
  	eelf_x86_64_haiku.c \
@@ -110,10 +102,10 @@ index 3d5685d6bae..85d1af40c3b 100644
  	ehppa64linux.c \
  	ei386pep.c \
 diff --git a/ld/configure.tgt b/ld/configure.tgt
-index de04a44b812..f26a3c835dd 100644
+index f937f78b876..da93f0d1325 100644
 --- a/ld/configure.tgt
 +++ b/ld/configure.tgt
-@@ -998,6 +998,9 @@ x86_64-*-cloudabi*)	targ_emul=elf_x86_64_cloudabi
+@@ -1009,6 +1009,9 @@ x86_64-*-cloudabi*)	targ_emul=elf_x86_64_cloudabi
  x86_64-*-haiku*)	targ_emul=elf_x86_64_haiku
  			targ_extra_emuls="elf_x86_64 elf_i386_haiku"
  			;;
@@ -138,5 +130,5 @@ index 00000000000..59e7df71afc
 @@ -0,0 +1 @@
 +source_sh ${srcdir}/emulparams/elf_x86_64.sh
 -- 
-2.39.2
+2.44.0
 

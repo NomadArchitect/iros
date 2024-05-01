@@ -4,6 +4,7 @@
 #include <ccpp/bits/getopt_short.h>
 #include <ccpp/bits/intptr_t.h>
 #include <ccpp/bits/off_t.h>
+#include <ccpp/bits/pid_t.h>
 #include <ccpp/bits/size_t.h>
 #include <ccpp/bits/ssize_t.h>
 #include <ccpp/bits/suseconds_t.h>
@@ -25,5 +26,15 @@ ssize_t write(int __fd, void const* __buffer, size_t __count);
 int chdir(char const* __path);
 int fchdir(int __fd);
 char* getcwd(char* __buffer, size_t __size);
+
+int execv(char const* path, char* const argv[]);
+int execvp(char const* path, char* const argv[]);
+int execve(char const* path, char* const argv[], char* const envp[]);
+
+pid_t getpid();
+
+int dup(int fd);
+
+int isatty(int fd);
 
 __CCPP_END_DECLARATIONS

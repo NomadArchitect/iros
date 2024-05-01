@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ccpp/bits/off_t.h>
 #include <ccpp/bits/stat.h>
 
 __CCPP_BEGIN_DECLARATIONS

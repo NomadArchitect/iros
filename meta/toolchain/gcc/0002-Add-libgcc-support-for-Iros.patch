@@ -1,0 +1,46 @@
+From 6bc36fdc303bbdafbafbf5178488bab46ee0c163 Mon Sep 17 00:00:00 2001
+From: ColeTrammer <cole.trammer@gmail.com>
+Date: Wed, 1 May 2024 22:41:08 -0700
+Subject: [PATCH 2/4] Add libgcc support for Iros
+
+---
+ libgcc/config.host          | 5 +++++
+ libgcc/unwind-dw2-fde-dip.c | 6 ++++++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/libgcc/config.host b/libgcc/config.host
+index e75a7af647f..bd8baa3bdf6 100644
+--- a/libgcc/config.host
++++ b/libgcc/config.host
+@@ -778,6 +778,11 @@ i[34567]86-*-openbsd*)
+ 	;;
+ x86_64-*-openbsd*)
+ 	;;
++x86_64-*-iros*)
++	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtend.o crtendS.o crtn.o"
++	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-gld-nover t-eh-dw2-dip"
++	tm_file="${tm_file} i386/elf-lib.h"
++	;;
+ i[34567]86-*-linux*)
+ 	extra_parts="$extra_parts crtprec32.o crtprec64.o crtprec80.o crtfastmath.o"
+ 	tmake_file="${tmake_file} i386/t-crtpc t-crtfm i386/t-crtstuff t-dfprules"
+diff --git a/libgcc/unwind-dw2-fde-dip.c b/libgcc/unwind-dw2-fde-dip.c
+index 57d0c8812b1..53f358a23f3 100644
+--- a/libgcc/unwind-dw2-fde-dip.c
++++ b/libgcc/unwind-dw2-fde-dip.c
+@@ -83,6 +83,12 @@
+ # define USE_PT_GNU_EH_FRAME
+ #endif
+ 
++#if !defined(inhibit_libc) && defined(HAVE_LD_EH_FRAME_HDR) \
++    && defined(TARGET_DL_ITERATE_PHDR) \
++    && defined(__iros__)
++# define USE_PT_GNU_EH_FRAME
++#endif
++
+ #if defined(USE_PT_GNU_EH_FRAME)
+ 
+ #include <link.h>
+-- 
+2.44.0
+

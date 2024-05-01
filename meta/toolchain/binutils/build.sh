@@ -2,14 +2,17 @@
 
 set -e
 
-VERSION=2_40
+VERSION=2.42
 PATCH_DIR=$(realpath $(dirname -- "$0"))
 PROJECT_ROOT=$(realpath "$PATCH_DIR"/../../..)
 PREFIX="${IROS_PREFIX:-$PROJECT_ROOT/cross}"
 SYSROOT="$PROJECT_ROOT"/build/x86_64/sysroot
 NPROC=$(nproc)
 
-git clone "https://sourceware.org/git/binutils-gdb.git" --depth=1 --branch "binutils-$VERSION" src
+curl -L --retry 5 "https://ftp.gnu.org/gnu/binutils/binutils-$VERSION.tar.xz" -o binutils.tar.xz
+tar xf binutils.tar.xz
+mv binutils-$VERSION src
+rm -f binutils.tar.xz
 
 cd src
 git apply $PATCH_DIR/*.patch

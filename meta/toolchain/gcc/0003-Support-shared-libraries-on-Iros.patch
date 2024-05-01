@@ -1,0 +1,45 @@
+From ac59b691d7ee1a01a6253c37d5618e23fb012d71 Mon Sep 17 00:00:00 2001
+From: ColeTrammer <cole.trammer@gmail.com>
+Date: Wed, 1 May 2024 22:43:05 -0700
+Subject: [PATCH 3/4] Support shared libraries on Iros
+
+---
+ libtool.m4 | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/libtool.m4 b/libtool.m4
+index add2d4a1e23..c795bdc4506 100644
+--- a/libtool.m4
++++ b/libtool.m4
+@@ -2415,6 +2415,17 @@ haiku*)
+   hardcode_into_libs=yes
+   ;;
+
++iros*)
++  version_type=linux
++  need_lib_prefix=no
++  need_version=no
++  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
++  soname_spec='${libname}${release}${shared_ext}$major'
++  shlibpath_var=LD_LIBRARY_PATH
++  shlibpath_overrides_runpath=yes
++  hardcode_into_libs=yes
++  ;;
++
+ hpux9* | hpux10* | hpux11*)
+   # Give a soname corresponding to the major version so that dld.sl refuses to
+   # link against other versions.
+@@ -3124,6 +3135,10 @@ darwin* | rhapsody*)
+   lt_cv_deplibs_check_method=pass_all
+   ;;
+
++iros*)
++  lt_cv_deplibs_check_method=pass_all
++  ;;
++
+ freebsd* | dragonfly*)
+   if echo __ELF__ | $CC -E - | $GREP __ELF__ > /dev/null; then
+     case $host_cpu in
+--
+2.44.0
+

@@ -39,7 +39,7 @@ constexpr auto format_bytes_per_sample(SampleFormat format) -> usize {
 struct FrameInfo {
     u32 channel_count { 1 };
     SampleFormat format { SampleFormat::Float32LE };
-    u32 sample_rate_hz { 0 };
+    u32 sample_rate_hz { 44100 };
 
     constexpr bool operator==(FrameInfo const&) const = default;
     constexpr auto operator<=>(FrameInfo const&) const = default;

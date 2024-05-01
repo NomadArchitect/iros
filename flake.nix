@@ -18,6 +18,7 @@
       perSystem = {
         config,
         pkgs,
+        system,
         ...
       }: {
         treefmt = {
@@ -43,8 +44,37 @@
           };
         };
 
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          overlays = [
+            (
+              self: super: {
+                default-gcc-version = 13;
+                gcc_latest = self.gcc14;
+                gcc14 = super.lowPrio (super.wrapCC (super.gcc13.cc.overrideAttrs (oldAttrs: let
+                  version = "14.1.0";
+                in rec {
+                  name = "gcc-${version}";
+                  inherit version;
+                  passthru = oldAttrs.passthru // {inherit version;};
+                  src = super.stdenv.fetchurlBoot {
+                    url = "https://gcc.gnu.org/pub/gcc/releases/gcc-${version}/gcc-${version}.tar.xz";
+                    hash = "sha256-4oPGVJh6/j3p2AgLwL15U0tcoNaBpzoR/ytdN2dCaEA=";
+                  };
+                  nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [super.flex];
+                  patches =
+                    super.lib.filter
+                    (patch: !super.lib.hasSuffix "ICE-PR110280.patch" (builtins.baseNameOf patch))
+                    oldAttrs.patches;
+                })));
+                gcc14Stdenv = super.overrideCC self.gccStdenv self.gcc14;
+              }
+            )
+          ];
+        };
+
         devShells.default = let
-          gccVersion = "13";
+          gccVersion = "14";
           llvmVersion = "18";
         in
           pkgs.mkShell.override {stdenv = pkgs."gcc${gccVersion}Stdenv";} {
@@ -78,6 +108,8 @@
                 pkgs.mpfr
                 pkgs.gmp
                 pkgs.libmpc
+                pkgs.autoconf269
+                pkgs.automake115x
                 pkgs.qemu
                 pkgs.ccache
                 pkgs.parted

@@ -22,7 +22,8 @@ target_sources(
               ${headers}
 )
 
-target_compile_features(di INTERFACE cxx_std_23)
+# FIXME: use the feature flag once a new enough CMake is out. target_compile_features(di INTERFACE cxx_std_26)
+target_compile_options(di INTERFACE --std=gnu++26)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(di INTERFACE -fsized-deallocation)
 endif()

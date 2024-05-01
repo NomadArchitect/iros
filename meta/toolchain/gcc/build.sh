@@ -2,17 +2,25 @@
 
 set -e
 
-VERSION=13.1.0
+VERSION=14.1.0
 PATCH_DIR=$(realpath $(dirname -- "$0"))
 PROJECT_ROOT=$(realpath "$PATCH_DIR"/../../..)
 PREFIX="${IROS_PREFIX:-$PROJECT_ROOT/cross}"
 SYSROOT="$PROJECT_ROOT"/build/x86_64/sysroot
 NPROC=$(nproc)
 
-git clone "https://gcc.gnu.org/git/gcc.git" --depth=1 --branch "releases/gcc-$VERSION" src
+curl -L --retry 5 "https://gcc.gnu.org/pub/gcc/releases/gcc-$VERSION/gcc-$VERSION.tar.xz" -o gcc.tar.xz
+tar xf gcc.tar.xz
+mv gcc-$VERSION src
+rm -f gcc.tar.gz
 
 cd src
 git apply $PATCH_DIR/*.patch
+
+cd libstdc++-v3
+# Use explicit autoconf 2.69 on Ubuntu, but fall-back to the default autoconf for Nix.
+autoconf2.69 || autoconf
+cd ..
 cd ..
 
 mkdir -p build
