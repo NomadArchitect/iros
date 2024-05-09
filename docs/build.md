@@ -31,19 +31,58 @@ To build the project documentation, you must have the latest version of Doxygen 
 generate the various diagrams. If Doxygen is not installed, the `docs` target will not exist in the generated build
 system.
 
+### Using the Nix shell
+
+If you prefer, you can use the provided nix shell which gives you access to all required and optional dependencies.
+This requires installing [Nix](https://nixos.org/download/). To access the shell simply run:
+
+```sh
+# NOTE: you will have to enable the flake and nix-command experimental features.
+nix develop
+```
+
+Additionally, the development environment can be loaded automatically when inside the project directory using
+[direnv](https://direnv.net/). After install, simply run:
+
+```sh
+direnv allow .
+```
+
+### Justfile
+
+To simplify running build commands, the project ships with a `justfile`. To use it, either use the nix shell
+or install [just](https://github.com/casey/just) manually.
+
+The main advantage of the just file is that it has a default CMake presets which can also be overridden by the
+`PRESET` environment variable. This makes building and testing the project significantly easier. The following
+build steps showcase how to perform common actions using the `justfile`, although the raw commands are also shown.
+
+### VS Code
+
+The project includes a `tests.json` and `launch.json` which should enable building the project through the
+VS Code GUI and well as debugging it. This requires the `cmake-tools` extension and actually uses it
+to determine the current `CMake` preset. This is entirely optional, as you can simply use the `justfile`
+instead to run project commands.
+
+### Build Steps
+
 Build the toolchain.
 
 ```sh
 ./meta/toolchain/build.sh
+
+# Or, using the justfile
+just build_toolchain
 ```
 
 Add `cross/bin` to your path. This is only needed when configuring the build for the first time.
 
 ```sh
+# This is done automatically by direnv if you choose to use it.
 export PATH="$(realpath .)/cross/bin:$PATH"
 ```
 
-At this point, the entire system should be buildable with cmake.
+At this point, the entire system should be buildable with CMake.
 
 ### Build Commands
 
@@ -54,24 +93,36 @@ Note that these commands apply using a dev container or locally, once things are
 
 ```sh
 cmake --preset gcc_iros_x86_64_release_default
+
+# Or, using the justfile
+just ic
 ```
 
 #### Build
 
 ```sh
 cmake --build --preset gcc_iros_x86_64_release_default
+
+# Or, using the justfile
+just ib
 ```
 
 #### Run Tests
 
 ```sh
 ctest --preset gcc_iros_x86_64_release_default
+
+# Or, using the justfile
+just it
 ```
 
 #### Run the kernel directly
 
 ```sh
 cmake --build --preset gcc_iros_x86_64_release_default --target ibr
+
+# Or, using the justfile
+just run
 ```
 
 #### Build Documentation
@@ -81,13 +132,11 @@ Live Preview or by pointing a web browser at this directory.
 
 ```sh
 cmake --build --preset gcc_iros_x86_64_release_default --target docs
+
+# Or, using the justfile
+# This also opens the documentation for you using `xdg-open`
+just docs
 ```
-
-### Building For Linux
-
-To get the required Linux dependencies, it is recommended to use the `nix` flake provided in the repository root.
-Once the `nix` package manager is installed, you can simply run `nix develop` to be placed into a shell which includes
-all packages need to build and run the userspace programs on Linux.
 
 ### Linux Presets
 

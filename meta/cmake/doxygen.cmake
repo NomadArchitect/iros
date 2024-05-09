@@ -33,7 +33,7 @@ if(DOXYGEN_FOUND)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/docs/mainpage.md")
     set(DOXYGEN_LAYOUT_FILE "${CMAKE_SOURCE_DIR}/docs/DoxygenLayout.xml")
     set(DOXYGEN_IMAGE_PATH "${CMAKE_SOURCE_DIR}/docs/assets")
-    set(DOXYGEN_EXCLUDE_PATTERNS "*/tests/*")
+    set(DOXYGEN_EXCLUDE_PATTERNS "*/tests/*" "xdg-shell.h")
     set(DOXYGEN_PREDEFINED __CCPP_BEGIN_DECLARATIONS= __CCPP_END_DECLARATIONS= __CCPP_RESTRICT=restrict)
     set(DOXYGEN_STRIP_FROM_INC_PATH "${CMAKE_SOURCE_DIR}/iris/include" "${CMAKE_SOURCE_DIR}/libs/ccpp/include"
                                     "${CMAKE_SOURCE_DIR}/libs/di/include" "${CMAKE_SOURCE_DIR}/libs/dius/include"
@@ -55,4 +55,6 @@ if(DOXYGEN_FOUND)
     )
 
     add_dependencies(docs doxygen_awesome_css)
+
+    add_custom_target(open_docs COMMAND /usr/bin/env xdg-open "file://${CMAKE_BINARY_DIR}/html/index.html")
 endif()

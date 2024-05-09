@@ -35,6 +35,7 @@
               enable = true;
               indent_size = 4;
             };
+            just.enable = true;
           };
 
           settings.formatter.cmake-format = {
@@ -93,6 +94,7 @@
                 pkgs.dockerfile-language-server-nodejs
                 pkgs.yaml-language-server
                 pkgs.hadolint
+                pkgs.just
                 (pkgs.writeShellScriptBin
                   "vscode-json-language-server"
                   ''${pkgs.nodePackages_latest.vscode-json-languageserver}/bin/vscode-json-languageserver "$@"'')
