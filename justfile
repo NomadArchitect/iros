@@ -43,6 +43,18 @@ btonly name=test:
     just build
     just testonly {{ name }}
 
+# Compile a specific file (regex matching)
+conly name:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    targets=$(cmake --build --preset {{ preset }}_non_unity -- -t targets all \
+        | cut -d ' ' -f 1 \
+        | tr -d '[:]' \
+        | grep -E "{{ name }}" \
+    )
+    cmake --build --preset {{ preset }}_non_unity -t ${targets}
+
 # Configure the build system for Iros
 ic:
     cmake --preset {{ iros_preset }}
