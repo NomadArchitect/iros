@@ -24,5 +24,6 @@ enum class SystemCall {
     read_directory = 19,
     truncate = 20,
     create_node = 21,
+    write_audio = 22,
 };
 }

@@ -27,6 +27,8 @@ public:
         return *reinterpret_cast<T*>(m_data.data());
     }
 
+    auto span() const { return m_data; }
+
 private:
     di::Span<di::Byte> m_data;
 };

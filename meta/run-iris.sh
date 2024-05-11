@@ -34,6 +34,8 @@ if [ ! "$IROS_NO_SMP" ]; then
     fi
 fi
 
+AUDIO="-audio driver=sdl,model=sb16,id=sound"
+
 if [ "$IRIS_MEMORY" ]; then
     MEMORY="-m $IRIS_MEMORY"
 else
@@ -43,6 +45,7 @@ else
     MEMORY="-m 256M"
 fi
 
+set -x
 qemu-system-"$IROS_ARCH" \
     $ENABLE_KVM \
     $DEBUG \
@@ -50,6 +53,7 @@ qemu-system-"$IROS_ARCH" \
     $SMP \
     $MEMORY \
     $LOG \
+    $AUDIO \
     -drive file="$IROS_IMAGE",format=raw,index=0,media=disk \
     -cpu max \
     -no-reboot \

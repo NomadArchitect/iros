@@ -14,6 +14,7 @@
 #include <dius/system/process.h>
 #include <diusaudio/formats/wav.h>
 #include <diusaudio/frame.h>
+#include <diusaudio/frame_info.h>
 #include <diusaudio/sink.h>
 
 namespace audiotest {
@@ -28,6 +29,7 @@ struct Args {
 
 di::Result<void> main(Args& args) {
     if (args.wav_file) {
+        dius::println("Trying to open WAV file: {}"_sv, *args.wav_file);
         auto result = TRY(audio::formats::parse_wav(*args.wav_file));
 
         dius::println("Playing WAV file with info {}, duration {}s"_sv, result.info(),
@@ -54,27 +56,30 @@ di::Result<void> main(Args& args) {
         return {};
     }
 
-    auto sink = TRY(audio::make_sink([](audio::ExclusiveFrame& frame) {
-        static int f = 220;
-        static f32 accumulator = 0;
+    dius::println("Generating sound with increasing pitch."_sv);
 
-        auto* out = frame.as_float32_le().data();
-        for (auto i : di::range(frame.sample_count())) {
-            (void) i;
+    auto sink = TRY(audio::make_sink(
+        [](audio::ExclusiveFrame& frame) {
+            static int f = 220;
+            static f32 accumulator = 0;
 
-            accumulator += 2 * di::numbers::pi * f / frame.sample_rate_hz();
-            if (accumulator >= 2 * di::numbers::pi) {
-                accumulator -= 2 * di::numbers::pi;
+            auto* out = frame.as_signed_int16_le().data();
+            for (auto _ : di::range(frame.sample_count())) {
+                accumulator += 2 * di::numbers::pi * f / frame.sample_rate_hz();
+                if (accumulator >= 2 * di::numbers::pi) {
+                    accumulator -= 2 * di::numbers::pi;
+                }
+
+                auto val = di::sin(accumulator) * 0.5;
+                auto int_val = i16(val * di::NumericLimits<i16>::max);
+                out = di::fill_n(out, frame.channel_count(), int_val);
             }
-
-            auto val = di::sin(accumulator) * 0.5;
-            out = di::fill_n(out, frame.channel_count(), val);
-        }
-        f++;
-        if (f == 880) {
-            f = 220;
-        }
-    }));
+            f++;
+            if (f == 880) {
+                f = 220;
+            }
+        },
+        audio::FrameInfo(2, audio::SampleFormat::SignedInt16LE)));
 
     audio::start(sink);
 

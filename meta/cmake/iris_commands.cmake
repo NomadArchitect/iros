@@ -32,6 +32,7 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/userland/tools/initrd" .
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/userland/core/ls" .
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/userland/core/cp" .
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/userland/audiotest/audio_test" .
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/iris/data.txt" .
     COMMAND mkdir -p "tmp"
     COMMAND rm -f "${CMAKE_BINARY_DIR}/initrd/initrd.bin"
@@ -44,6 +45,7 @@ add_custom_target(
             test_userspace
             test_create_task
             test_read
+            audio_test
 )
 
 add_custom_target(

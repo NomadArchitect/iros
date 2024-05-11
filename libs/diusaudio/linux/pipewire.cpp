@@ -1,5 +1,3 @@
-#include <di/vocab/bytes/byte_buffer.h>
-#include <diusaudio/frame_info.h>
 #ifdef DIUSAUDIO_HAVE_PIPEWIRE
 #include "pipewire.h"
 
@@ -10,9 +8,11 @@
 #include <di/util/as_const_pointer.h>
 #include <di/util/exchange.h>
 #include <di/util/unreachable.h>
+#include <di/vocab/bytes/byte_buffer.h>
 #include <di/vocab/pointer/box.h>
 #include <dius/print.h>
 #include <diusaudio/frame.h>
+#include <diusaudio/frame_info.h>
 #include <diusaudio/sink.h>
 #include <pipewire/core.h>
 #include <pipewire/main-loop.h>

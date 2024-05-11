@@ -4,6 +4,7 @@
 #include <di/math/prelude.h>
 #include <di/util/prelude.h>
 #include <di/vocab/expected/prelude.h>
+#include <iris/core/print.h>
 #include <iris/fs/inode.h>
 #include <iris/fs/tnode.h>
 #include <iris/mm/map_physical_address.h>
@@ -60,14 +61,17 @@ di::AnySenderOf<usize> tag_invoke(di::Tag<read_file>, InodeFile& self, Userspace
     auto& backing_object = inode.backing_object();
     auto nread = 0_u64;
     for (auto offset : di::range(page_begin, page_end) | di::stride(4096)) {
+        auto page_offset = offset % 4096;
+        auto to_read = di::min(4096 - page_offset, buffer.size() - nread);
+        if (to_read == 0) {
+            break;
+        }
+
         auto physical_address = backing_object.lock()->lookup_page(offset / 4096);
         if (!physical_address) {
             physical_address = co_await inode_read(inode, backing_object, offset / 4096);
         }
         ASSERT(physical_address);
-
-        auto page_offset = offset % 4096;
-        auto to_read = di::min(4096 - page_offset, buffer.size() - nread);
 
         auto page = co_await mm::map_physical_address(*physical_address, 4096);
         auto page_data = di::Span { &page.typed<byte const>() + page_offset, to_read };

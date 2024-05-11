@@ -1,5 +1,6 @@
 #include <di/bit/endian/little_endian.h>
 #include <di/function/monad/monad_try.h>
+#include <di/io/read_all.h>
 #include <di/platform/custom.h>
 #include <di/util/uuid.h>
 #include <di/vocab/array/array.h>
@@ -14,15 +15,16 @@
 
 namespace audio::formats {
 auto parse_wav([[gnu::unused]] di::PathView path) -> di::Result<Frame> {
-#ifdef __iros__
-    return di::Unexpected(di::BasicError::NotSupported);
-#else
     auto file = TRY(dius::open_sync(path, dius::OpenMode::Readonly));
 
     // FIXME: this is an obvious race condition with opening the file.
     auto size = TRY(dius::filesystem::file_size(path));
 
-    auto contents = TRY(file.map(0, size, dius::Protection::Readable, dius::MapFlags::Private));
+    auto contents = di::Vector<byte> {};
+    contents.reserve(size);
+    contents.assume_size(size);
+
+    TRY(file.read_exactly(contents.span()));
     auto bytes = contents.span();
 
     if (bytes.size() < 12) {
@@ -91,6 +93,5 @@ auto parse_wav([[gnu::unused]] di::PathView path) -> di::Result<Frame> {
     auto buffer = di::ByteBuffer(di::move(contents));
     return Frame(*buffer.slice(data_offset, data_size),
                  FrameInfo((*format)->channel_count, SampleFormat::SignedInt16LE, (*format)->sample_rate));
-#endif
 }
 }

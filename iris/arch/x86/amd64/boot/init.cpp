@@ -3,6 +3,7 @@
 #include <iris/arch/x86/amd64/hw/local_apic.h>
 #include <iris/arch/x86/amd64/hw/pic.h>
 #include <iris/arch/x86/amd64/hw/pit.h>
+#include <iris/arch/x86/amd64/hw/sb16.h>
 #include <iris/arch/x86/amd64/hw/serial.h>
 #include <iris/arch/x86/amd64/idt.h>
 #include <iris/arch/x86/amd64/io_instructions.h>
@@ -99,6 +100,7 @@ void init_task() {
     iris::x86::amd64::init_alternative_processors();
 
     iris::x86::amd64::init_serial();
+    iris::x86::amd64::init_sb16();
 }
 
 extern "C" [[gnu::naked]] void iris_entry() {

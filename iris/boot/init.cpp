@@ -105,7 +105,7 @@ void iris_main() {
         }
     }
 
-    iris::mm::reserve_page_frames(iris::mm::PhysicalAddress(0), 16 * 16 * 2);
+    iris::mm::reserve_page_frames(iris::mm::PhysicalAddress(0), 64);
 
     ASSERT_GT(module_request.response->module_count, 0u);
     auto initrd_module = *module_request.response->modules[0];

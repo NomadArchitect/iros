@@ -1,4 +1,5 @@
 #include <di/execution/algorithm/sync_wait.h>
+#include <iris/arch/x86/amd64/hw/sb16.h>
 #include <iris/core/print.h>
 #include <iris/core/task.h>
 #include <iris/core/userspace_access.h>
@@ -270,6 +271,13 @@ Expected<u64> do_syscall(Task& current_task, arch::TaskState& task_state) {
             return TRY_UNERASE_ERROR(
                 di::execution::sync_wait(create_node(current_task.root_tnode(), current_task.cwd_tnode(), path, type)) %
                 di::function::value(0));
+        }
+        // TODO: this system call should be completely axed.
+        case SystemCall::write_audio: {
+            auto const* buffer = reinterpret_cast<di::Byte const*>(task_state.syscall_arg1());
+            auto amount = task_state.syscall_arg2();
+
+            return x86::amd64::sb16_write_audio(TRY(di::create<UserspaceBuffer>(buffer, amount)));
         }
         default:
             iris::println("Encounted unexpected system call: {}"_sv, di::to_underlying(number));
