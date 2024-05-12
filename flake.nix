@@ -94,6 +94,7 @@
                 pkgs.dockerfile-language-server-nodejs
                 pkgs.yaml-language-server
                 pkgs.hadolint
+                pkgs.jq
                 pkgs.just
                 (pkgs.writeShellScriptBin
                   "vscode-json-language-server"
