@@ -44,6 +44,8 @@ enum class Number : int {
     lseek = __NR_lseek,
     mknodat = __NR_mknodat,
     mkdirat = __NR_mkdirat,
+    bind = __NR_bind,
+    listen = __NR_listen,
 };
 
 using SystemCallArg = unsigned long;

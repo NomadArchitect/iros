@@ -1,11 +1,13 @@
 #pragma once
 
 #include <di/assert/prelude.h>
+#include <di/container/algorithm/copy.h>
 #include <di/container/algorithm/prelude.h>
 #include <di/container/intrusive/prelude.h>
 #include <di/container/queue/prelude.h>
 #include <di/execution/interface/connect.h>
 #include <di/execution/interface/run.h>
+#include <di/execution/io/async_net.h>
 #include <di/execution/meta/connect_result.h>
 #include <di/execution/prelude.h>
 #include <di/execution/query/make_env.h>
@@ -14,13 +16,25 @@
 #include <di/execution/types/completion_signuatures.h>
 #include <di/function/make_deferred.h>
 #include <di/function/prelude.h>
+#include <di/meta/operations.h>
 #include <di/platform/compiler.h>
-#include <di/util/prelude.h>
+#include <di/util/addressof.h>
 #include <di/vocab/optional/prelude.h>
 #include <di/vocab/variant/prelude.h>
 #include <dius/error.h>
+#include <dius/linux/error.h>
 #include <dius/linux/io_uring.h>
+#include <dius/linux/system_call.h>
+#include <dius/net/address.h>
 #include <dius/sync_file.h>
+
+#ifdef DIUS_USE_RUNTIME
+#include <linux/socket.h>
+#include <linux/un.h>
+#else
+#include <sys/socket.h>
+#include <sys/un.h>
+#endif
 
 namespace dius::linux {
 struct IoUringContext;
@@ -29,6 +43,8 @@ struct OperationStateBase;
 struct IoUringScheduler;
 struct ScheduleSender;
 struct OpenSender;
+struct AcceptSender;
+struct MakeSocketSender;
 
 template<di::concepts::Invocable<io_uring::SQE*> Fun>
 static void enqueue_io_operation(IoUringContext*, OperationStateBase* op, Fun&& function);
@@ -292,6 +308,214 @@ private:
     }
 };
 
+struct ConnectSender {
+public:
+    using is_sender = void;
+
+    using CompletionSignatures = di::CompletionSignatures<di::SetValue(), di::SetError(di::Error), di::SetStopped()>;
+
+    IoUringContext* parent { nullptr };
+    int file_descriptor { -1 };
+    net::UnixAddress address;
+
+private:
+    template<typename Rec>
+    struct OperationStateT {
+        struct Type : OperationStateBase {
+            explicit Type(IoUringContext* parent, int file_descriptor, net::UnixAddress address, Rec receiver)
+                : m_parent(parent), m_file_descriptor(file_descriptor), m_receiver(di::move(receiver)) {
+                if (address.path().size() < 108 - 1) {
+                    sockaddr_un addr = {};
+                    addr.sun_family = 1;
+                    di::copy(address.path(), addr.sun_path);
+                    m_address = addr;
+                }
+            }
+
+            void execute() override {
+                if (di::execution::get_stop_token(m_receiver).stop_requested()) {
+                    di::execution::set_stopped(di::move(m_receiver));
+                } else {
+                    // If the path was too long, fail fast.
+                    if (!m_address) {
+                        di::execution::set_error(di::move(m_receiver), di::Error(dius::PosixError::FilenameTooLong));
+                        return;
+                    }
+
+                    // Enqueue io_uring sqe with the close request.
+                    enqueue_io_operation(m_parent, this, [&](auto* sqe) {
+                        sqe->opcode = IORING_OP_CONNECT;
+                        sqe->fd = m_file_descriptor;
+                        sqe->addr = (u64) di::addressof(m_address.value());
+                        sqe->off = sizeof(m_address.value());
+                    });
+                }
+            }
+
+            void did_complete(io_uring::CQE const* cqe) override {
+                if (cqe->res < 0) {
+                    di::execution::set_error(di::move(m_receiver), di::Error(PosixError(-cqe->res)));
+                } else {
+                    di::execution::set_value(di::move(m_receiver));
+                }
+            }
+
+        private:
+            friend void tag_invoke(di::Tag<di::execution::start>, Type& self) {
+                enqueue_operation(self.m_parent, di::addressof(self));
+            }
+
+            IoUringContext* m_parent { nullptr };
+            int m_file_descriptor { -1 };
+            di::Optional<sockaddr_un> m_address;
+            [[no_unique_address]] Rec m_receiver;
+        };
+    };
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    using OperationState = di::meta::Type<OperationStateT<Receiver>>;
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    friend auto tag_invoke(di::Tag<di::execution::connect>, ConnectSender self, Receiver receiver) {
+        return OperationState<Receiver> { self.parent, self.file_descriptor, di::move(self.address),
+                                          di::move(receiver) };
+    }
+
+    constexpr friend auto tag_invoke(di::Tag<di::execution::get_env>, ConnectSender const& self) {
+        return Env(self.parent);
+    }
+};
+
+struct BindSender {
+public:
+    using is_sender = void;
+
+    using CompletionSignatures = di::CompletionSignatures<di::SetValue(), di::SetError(di::Error), di::SetStopped()>;
+
+    IoUringContext* parent { nullptr };
+    int file_descriptor { -1 };
+    net::UnixAddress address;
+
+private:
+    template<typename Rec>
+    struct OperationStateT {
+        struct Type : OperationStateBase {
+            explicit Type(IoUringContext* parent, int file_descriptor, net::UnixAddress address, Rec receiver)
+                : m_parent(parent), m_file_descriptor(file_descriptor), m_receiver(di::move(receiver)) {
+                if (address.path().size() < 108 - 1) {
+                    sockaddr_un addr = {};
+                    addr.sun_family = 1;
+                    di::copy(address.path(), addr.sun_path);
+                    m_address = addr;
+                }
+            }
+
+            void execute() override {
+                if (di::execution::get_stop_token(m_receiver).stop_requested()) {
+                    di::execution::set_stopped(di::move(m_receiver));
+                } else {
+                    // If the path was too long, fail fast.
+                    if (!m_address) {
+                        di::execution::set_error(di::move(m_receiver), di::Error(dius::PosixError::FilenameTooLong));
+                        return;
+                    }
+
+                    // io_uring doesn't support bind() and listen()...
+                    auto result = system::system_call<int>(system::Number::bind, m_file_descriptor,
+                                                           di::addressof(m_address.value()), sizeof(m_address.value()));
+                    if (!result.has_value()) {
+                        di::execution::set_error(di::move(m_receiver), di::Error(di::move(result).error()));
+                    } else {
+                        di::execution::set_value(di::move(m_receiver));
+                    }
+                }
+            }
+
+        private:
+            friend void tag_invoke(di::Tag<di::execution::start>, Type& self) {
+                enqueue_operation(self.m_parent, di::addressof(self));
+            }
+
+            IoUringContext* m_parent { nullptr };
+            int m_file_descriptor { -1 };
+            di::Optional<sockaddr_un> m_address;
+            [[no_unique_address]] Rec m_receiver;
+        };
+    };
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    using OperationState = di::meta::Type<OperationStateT<Receiver>>;
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    friend auto tag_invoke(di::Tag<di::execution::connect>, BindSender self, Receiver receiver) {
+        return OperationState<Receiver> { self.parent, self.file_descriptor, di::move(self.address),
+                                          di::move(receiver) };
+    }
+
+    constexpr friend auto tag_invoke(di::Tag<di::execution::get_env>, BindSender const& self) {
+        return Env(self.parent);
+    }
+};
+
+struct ListenSender {
+public:
+    using is_sender = void;
+
+    using CompletionSignatures = di::CompletionSignatures<di::SetValue(), di::SetError(di::Error), di::SetStopped()>;
+
+    IoUringContext* parent { nullptr };
+    int file_descriptor { -1 };
+    int count { 0 };
+
+private:
+    template<typename Rec>
+    struct OperationStateT {
+        struct Type : OperationStateBase {
+            explicit Type(IoUringContext* parent, int file_descriptor, int count, Rec receiver)
+                : m_parent(parent)
+                , m_file_descriptor(file_descriptor)
+                , m_count(count)
+                , m_receiver(di::move(receiver)) {}
+
+            void execute() override {
+                if (di::execution::get_stop_token(m_receiver).stop_requested()) {
+                    di::execution::set_stopped(di::move(m_receiver));
+                } else {
+                    // io_uring doesn't support bind() and listen()...
+                    auto result = system::system_call<int>(system::Number::listen, m_file_descriptor, m_count);
+                    if (!result.has_value()) {
+                        di::execution::set_error(di::move(m_receiver), di::Error(di::move(result).error()));
+                    } else {
+                        di::execution::set_value(di::move(m_receiver));
+                    }
+                }
+            }
+
+        private:
+            friend void tag_invoke(di::Tag<di::execution::start>, Type& self) {
+                enqueue_operation(self.m_parent, di::addressof(self));
+            }
+
+            IoUringContext* m_parent { nullptr };
+            int m_file_descriptor { -1 };
+            int m_count {};
+            [[no_unique_address]] Rec m_receiver;
+        };
+    };
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    using OperationState = di::meta::Type<OperationStateT<Receiver>>;
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    friend auto tag_invoke(di::Tag<di::execution::connect>, ListenSender self, Receiver receiver) {
+        return OperationState<Receiver> { self.parent, self.file_descriptor, self.count, di::move(receiver) };
+    }
+
+    constexpr friend auto tag_invoke(di::Tag<di::execution::get_env>, ListenSender const& self) {
+        return Env(self.parent);
+    }
+};
+
 struct ScheduleSender {
 public:
     using is_sender = void;
@@ -366,6 +590,62 @@ private:
     di::Path m_path;
     OpenMode m_mode;
     u16 m_create_mode;
+    int m_fd { -1 };
+};
+
+class AcceptSocket {
+public:
+    explicit AcceptSocket(int base_fd) : m_base_fd(base_fd) {}
+
+    int base_fd() const { return m_base_fd; }
+
+private:
+    int m_base_fd { -1 };
+};
+
+template<typename Base>
+class AsyncSocket
+    : public di::Immovable
+    , public Base {
+public:
+    template<typename... Args>
+    requires(di::concepts::ConstructibleFrom<Base, Args...>)
+    explicit AsyncSocket(IoUringContext* context, Args&&... args)
+        : Base(di::forward<Args>(args)...), m_parent(context) {}
+
+    IoUringContext* parent() const { return m_parent; }
+
+    int fd() const { return m_fd; }
+    void set_fd(int fd) { m_fd = fd; }
+
+private:
+    friend auto tag_invoke(di::Tag<di::execution::async_read_some>, AsyncSocket& self, di::Span<di::Byte> buffer,
+                           di::Optional<u64>) {
+        return ReadSomeSender { self.m_parent, self.m_fd, buffer, {} };
+    }
+
+    friend auto tag_invoke(di::Tag<di::execution::async_write_some>, AsyncSocket& self, di::Span<di::Byte const> buffer,
+                           di::Optional<u64>) {
+        return WriteSomeSender { self.m_parent, self.m_fd, buffer, {} };
+    }
+
+    friend auto tag_invoke(di::Tag<di::execution::async_bind>, AsyncSocket& self, net::UnixAddress address) {
+        return BindSender { self.m_parent, self.m_fd, di::move(address) };
+    }
+
+    friend auto tag_invoke(di::Tag<di::execution::async_connect>, AsyncSocket& self, net::UnixAddress address) {
+        return ConnectSender { self.m_parent, self.m_fd, di::move(address) };
+    }
+
+    friend auto tag_invoke(di::Tag<di::execution::async_listen>, AsyncSocket& self, int count) {
+        return ListenSender { self.m_parent, self.m_fd, count };
+    }
+
+    friend auto tag_invoke(di::Tag<di::execution::async_accept>, AsyncSocket& self) {
+        return di::make_deferred<AsyncSocket<AcceptSocket>>(self.m_parent, self.m_fd);
+    }
+
+    IoUringContext* m_parent;
     int m_fd { -1 };
 };
 
@@ -451,15 +731,145 @@ private:
     }
 };
 
+struct MakeSocketSender {
+public:
+    using is_sender = void;
+
+    using AsyncSocket = linux::AsyncSocket<di::Void>;
+
+    using CompletionSignatures = di::CompletionSignatures<di::SetValue(di::ReferenceWrapper<AsyncSocket>),
+                                                          di::SetError(di::Error), di::SetStopped()>;
+
+    IoUringContext* parent;
+    di::ReferenceWrapper<AsyncSocket> socket;
+
+private:
+    template<typename Rec>
+    struct OperationStateT {
+        struct Type : OperationStateBase {
+            explicit Type(IoUringContext* parent, di::ReferenceWrapper<AsyncSocket> socket, Rec&& receiver)
+                : m_parent(parent), m_socket(socket), m_receiver(di::move(receiver)) {}
+
+            void execute() override {
+                if (di::execution::get_stop_token(m_receiver).stop_requested()) {
+                    di::execution::set_stopped(di::move(m_receiver));
+                } else {
+                    // Enqueue io_uring sqe with the make socket request.
+                    enqueue_io_operation(m_parent, this, [&](auto* sqe) {
+                        sqe->opcode = IORING_OP_SOCKET;
+                        sqe->fd = 1;
+                        sqe->off = 1;
+                    });
+                }
+            }
+
+            void did_complete(io_uring::CQE const* cqe) override {
+                if (cqe->res < 0) {
+                    di::execution::set_error(di::move(m_receiver), di::Error(PosixError(-cqe->res)));
+                } else {
+                    m_socket.get().set_fd(cqe->res);
+                    di::execution::set_value(di::move(m_receiver), di::ref(m_socket));
+                }
+            }
+
+        private:
+            friend void tag_invoke(di::Tag<di::execution::start>, Type& self) {
+                enqueue_operation(self.m_parent, di::addressof(self));
+            }
+
+            IoUringContext* m_parent;
+            di::ReferenceWrapper<AsyncSocket> m_socket;
+            [[no_unique_address]] Rec m_receiver;
+        };
+    };
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    using OperationState = di::meta::Type<OperationStateT<Receiver>>;
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    friend auto tag_invoke(di::Tag<di::execution::connect>, MakeSocketSender self, Receiver receiver) {
+        return OperationState<Receiver> { self.parent, self.socket, di::move(receiver) };
+    }
+
+    constexpr friend auto tag_invoke(di::Tag<di::execution::get_env>, MakeSocketSender const& self) {
+        return Env(self.parent);
+    }
+};
+
+struct AcceptSender {
+public:
+    using is_sender = void;
+
+    using AsyncSocket = linux::AsyncSocket<AcceptSocket>;
+
+    using CompletionSignatures = di::CompletionSignatures<di::SetValue(di::ReferenceWrapper<AsyncSocket>),
+                                                          di::SetError(di::Error), di::SetStopped()>;
+
+    IoUringContext* parent;
+    di::ReferenceWrapper<AsyncSocket> socket;
+
+private:
+    template<typename Rec>
+    struct OperationStateT {
+        struct Type : OperationStateBase {
+            explicit Type(IoUringContext* parent, di::ReferenceWrapper<AsyncSocket> socket, Rec&& receiver)
+                : m_parent(parent), m_socket(socket), m_receiver(di::move(receiver)) {}
+
+            void execute() override {
+                if (di::execution::get_stop_token(m_receiver).stop_requested()) {
+                    di::execution::set_stopped(di::move(m_receiver));
+                } else {
+                    // Enqueue io_uring sqe with the make socket request.
+                    enqueue_io_operation(m_parent, this, [&](auto* sqe) {
+                        sqe->opcode = IORING_OP_ACCEPT;
+                        sqe->fd = m_socket.get().base_fd();
+                    });
+                }
+            }
+
+            void did_complete(io_uring::CQE const* cqe) override {
+                if (cqe->res < 0) {
+                    di::execution::set_error(di::move(m_receiver), di::Error(PosixError(-cqe->res)));
+                } else {
+                    m_socket.get().set_fd(cqe->res);
+                    di::execution::set_value(di::move(m_receiver), di::ref(m_socket));
+                }
+            }
+
+        private:
+            friend void tag_invoke(di::Tag<di::execution::start>, Type& self) {
+                enqueue_operation(self.m_parent, di::addressof(self));
+            }
+
+            IoUringContext* m_parent;
+            di::ReferenceWrapper<AsyncSocket> m_socket;
+            [[no_unique_address]] Rec m_receiver;
+        };
+    };
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    using OperationState = di::meta::Type<OperationStateT<Receiver>>;
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    friend auto tag_invoke(di::Tag<di::execution::connect>, AcceptSender self, Receiver receiver) {
+        return OperationState<Receiver> { self.parent, self.socket, di::move(receiver) };
+    }
+
+    constexpr friend auto tag_invoke(di::Tag<di::execution::get_env>, AcceptSender const& self) {
+        return Env(self.parent);
+    }
+};
+
+template<typename Object, typename CreateSend>
 struct RunSender {
 public:
     using is_sender = di::SequenceTag;
 
-    using CompletionSignatures = di::CompletionSignatures<di::SetValue(di::ReferenceWrapper<AsyncFile>),
-                                                          di::SetError(di::Error), di::SetStopped()>;
+    using CompletionSignatures =
+        di::CompletionSignatures<di::SetValue(di::ReferenceWrapper<Object>), di::SetError(di::Error), di::SetStopped()>;
 
     IoUringContext* parent;
-    di::ReferenceWrapper<AsyncFile> file;
+    di::ReferenceWrapper<Object> object;
 
 private:
     template<typename Rec>
@@ -489,17 +899,17 @@ private:
                 Rec* m_receiver;
             };
 
-            explicit Type(IoUringContext* parent, di::ReferenceWrapper<AsyncFile> file, Rec&& receiver)
-                : m_parent(parent), m_file(file), m_receiver(di::move(receiver)) {}
+            explicit Type(IoUringContext* parent, di::ReferenceWrapper<Object> object, Rec&& receiver)
+                : m_parent(parent), m_object(object), m_receiver(di::move(receiver)) {}
 
         private:
-            using NextSender = di::meta::NextSenderOf<Rec, OpenSender>;
+            using NextSender = di::meta::NextSenderOf<Rec, CreateSend>;
             using Op1 = di::meta::ConnectResult<NextSender, Rec1>;
             using Op2 = di::meta::ConnectResult<CloseSender, Rec2>;
 
             void finish_phase1() {
                 auto& op = m_op.template emplace<2>(di::DeferConstruct([&] {
-                    return di::execution::connect(CloseSender(m_parent, m_file.get().fd()),
+                    return di::execution::connect(CloseSender(m_parent, m_object.get().fd()),
                                                   Rec2(di::addressof(m_receiver)));
                 }));
                 di::execution::start(op);
@@ -508,7 +918,8 @@ private:
             friend void tag_invoke(di::Tag<di::execution::start>, Type& self) {
                 auto& op = self.m_op.template emplace<1>(di::DeferConstruct([&] {
                     return di::execution::connect(
-                        di::execution::set_next(self.m_receiver, OpenSender(self.m_parent, self.m_file)), Rec1([&self] {
+                        di::execution::set_next(self.m_receiver, CreateSend(self.m_parent, self.m_object)),
+                        Rec1([&self] {
                             return self.finish_phase1();
                         }));
                 }));
@@ -516,7 +927,7 @@ private:
             }
 
             IoUringContext* m_parent;
-            di::ReferenceWrapper<AsyncFile> m_file;
+            di::ReferenceWrapper<Object> m_object;
             [[no_unique_address]] Rec m_receiver;
             DI_IMMOVABLE_NO_UNIQUE_ADDRESS di::Variant<di::Void, Op1, Op2> m_op;
         };
@@ -528,7 +939,7 @@ private:
     template<
         di::ReceiverOf<di::CompletionSignatures<di::SetValue(), di::SetError(di::Error), di::SetStopped()>> Receiver>
     friend auto tag_invoke(di::Tag<di::execution::subscribe>, RunSender self, Receiver receiver) {
-        return OperationState<Receiver> { self.parent, self.file, di::move(receiver) };
+        return OperationState<Receiver> { self.parent, self.object, di::move(receiver) };
     }
 
     constexpr friend auto tag_invoke(di::Tag<di::execution::get_env>, RunSender const& self) {
@@ -538,7 +949,15 @@ private:
 };
 
 inline auto tag_invoke(di::Tag<di::execution::run>, AsyncFile& self) {
-    return RunSender { self.parent(), self };
+    return RunSender<AsyncFile, OpenSender> { self.parent(), self };
+}
+
+inline auto tag_invoke(di::Tag<di::execution::run>, AsyncSocket<di::Void>& self) {
+    return RunSender<AsyncSocket<di::Void>, MakeSocketSender> { self.parent(), self };
+}
+
+inline auto tag_invoke(di::Tag<di::execution::run>, AsyncSocket<AcceptSocket>& self) {
+    return RunSender<AsyncSocket<AcceptSocket>, AcceptSender> { self.parent(), self };
 }
 
 inline ScheduleSender tag_invoke(di::Tag<di::execution::schedule>, IoUringScheduler const& self) {
@@ -552,6 +971,10 @@ inline auto tag_invoke(di::Tag<di::execution::async_open>, IoUringScheduler cons
 
 inline auto tag_invoke(di::Tag<di::execution::async_open>, IoUringScheduler const& self, di::Path path, OpenMode mode) {
     return di::make_deferred<AsyncFile>(self.parent, di::move(path), mode, 0666);
+}
+
+inline auto tag_invoke(di::Tag<di::execution::async_make_socket>, IoUringScheduler const& self) {
+    return di::make_deferred<AsyncSocket<di::Void>>(self.parent);
 }
 
 inline di::Result<IoUringContext> IoUringContext::create() {
