@@ -31,7 +31,7 @@
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.autoAddFileAssociations": false,
     "C_Cpp.intelliSenseEngine": "disabled",
-    "clangd.path": "/usr/bin/clangd",
+    "clangd.path": "clangd",
     "clangd.arguments": ["--query-driver=/usr/local/bin/*,/usr/bin/*,${workspaceFolder}/cross/bin/*"],
     "livePreview.autoRefreshPreview": "Never",
     "livePreview.defaultPreviewPath": "build/x86_64/gcc/release/default/html",

@@ -29,6 +29,15 @@ RUN sudo apt-get -y install pip \
 RUN sudo apt-get -y install npm \
     && sudo npm install -g prettier
 
+# Install just
+RUN sudo apt-get -y install just
+
+# Install wayland-dev
+RUN sudo apt-get -y install libwayland-dev
+
+# Install jq
+RUN sudo apt-get -y install jq
+qqqqqq
 # Install doxygen
 RUN apt-get update -y \
     && wget https://www.doxygen.nl/files/doxygen-${doxygen_version}.linux.bin.tar.gz \

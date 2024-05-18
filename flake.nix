@@ -114,6 +114,8 @@
                 pkgs.autoconf269
                 pkgs.automake115x
                 pkgs.qemu
+                pkgs.gdb
+                pkgs."lldb_${llvmVersion}"
                 pkgs.ccache
                 pkgs.parted
                 pkgs.gcovr
