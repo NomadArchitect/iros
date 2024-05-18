@@ -26,6 +26,7 @@
 #include <dius/linux/io_uring.h>
 #include <dius/linux/system_call.h>
 #include <dius/net/address.h>
+#include <dius/net/socket.h>
 #include <dius/sync_file.h>
 
 #ifdef DIUS_USE_RUNTIME
@@ -63,14 +64,14 @@ struct IoUringContext {
 public:
     static di::Result<IoUringContext> create();
 
-    IoUringContext(IoUringContext&&) = default;
+    IoUringContext(IoUringContext&& other) : m_handle(di::move(other.m_handle)) {}
 
     ~IoUringContext();
 
     IoUringScheduler get_scheduler();
 
     void run();
-    void finish() { m_done = true; }
+    void finish() { m_done.store(true); }
 
 private:
     IoUringContext(io_uring::IoUringHandle handle) : m_handle(di::move(handle)) {};
@@ -78,7 +79,7 @@ private:
 public:
     io_uring::IoUringHandle m_handle;
     di::Queue<OperationStateBase, di::IntrusiveForwardList<OperationStateBase>> m_queue;
-    bool m_done { false };
+    di::Atomic<bool> m_done { false };
 };
 
 struct IoUringScheduler {
@@ -516,6 +517,69 @@ private:
     }
 };
 
+struct ShutdownSender {
+public:
+    using is_sender = void;
+
+    using CompletionSignatures = di::CompletionSignatures<di::SetValue(), di::SetError(di::Error), di::SetStopped()>;
+
+    IoUringContext* parent { nullptr };
+    int file_descriptor { -1 };
+    net::Shutdown how {};
+
+private:
+    template<typename Rec>
+    struct OperationStateT {
+        struct Type : OperationStateBase {
+            explicit Type(IoUringContext* parent, int file_descriptor, net::Shutdown how, Rec receiver)
+                : m_parent(parent), m_file_descriptor(file_descriptor), m_how(how), m_receiver(di::move(receiver)) {}
+
+            void execute() override {
+                if (di::execution::get_stop_token(m_receiver).stop_requested()) {
+                    di::execution::set_stopped(di::move(m_receiver));
+                } else {
+                    // Enqueue io_uring sqe with the close request.
+                    enqueue_io_operation(m_parent, this, [&](auto* sqe) {
+                        sqe->opcode = IORING_OP_SHUTDOWN;
+                        sqe->fd = m_file_descriptor;
+                        sqe->len = (u32) m_how;
+                    });
+                }
+            }
+
+            void did_complete(io_uring::CQE const* cqe) override {
+                if (cqe->res < 0) {
+                    di::execution::set_error(di::move(m_receiver), di::Error(PosixError(-cqe->res)));
+                } else {
+                    di::execution::set_value(di::move(m_receiver));
+                }
+            }
+
+        private:
+            friend void tag_invoke(di::Tag<di::execution::start>, Type& self) {
+                enqueue_operation(self.m_parent, di::addressof(self));
+            }
+
+            IoUringContext* m_parent { nullptr };
+            int m_file_descriptor { -1 };
+            net::Shutdown m_how {};
+            [[no_unique_address]] Rec m_receiver;
+        };
+    };
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    using OperationState = di::meta::Type<OperationStateT<Receiver>>;
+
+    template<di::ReceiverOf<CompletionSignatures> Receiver>
+    friend auto tag_invoke(di::Tag<di::execution::connect>, ShutdownSender self, Receiver receiver) {
+        return OperationState<Receiver> { self.parent, self.file_descriptor, self.how, di::move(receiver) };
+    }
+
+    constexpr friend auto tag_invoke(di::Tag<di::execution::get_env>, ShutdownSender const& self) {
+        return Env(self.parent);
+    }
+};
+
 struct ScheduleSender {
 public:
     using is_sender = void;
@@ -639,6 +703,10 @@ private:
 
     friend auto tag_invoke(di::Tag<di::execution::async_listen>, AsyncSocket& self, int count) {
         return ListenSender { self.m_parent, self.m_fd, count };
+    }
+
+    friend auto tag_invoke(di::Tag<di::execution::async_shutdown>, AsyncSocket& self, net::Shutdown how) {
+        return ShutdownSender { self.m_parent, self.m_fd, how };
     }
 
     friend auto tag_invoke(di::Tag<di::execution::async_accept>, AsyncSocket& self) {
@@ -982,30 +1050,6 @@ inline di::Result<IoUringContext> IoUringContext::create() {
 }
 
 inline IoUringContext::~IoUringContext() = default;
-
-inline void IoUringContext::run() {
-    for (;;) {
-        // Reap any pending completions.
-        while (auto cqe = m_handle.get_next_cqe()) {
-            auto* as_operation = reinterpret_cast<OperationStateBase*>(cqe->user_data);
-            as_operation->did_complete(cqe.data());
-        }
-
-        // Run locally available operations.
-        while (!m_queue.empty()) {
-            auto& item = *m_queue.pop();
-            item.execute();
-        }
-
-        // If we're done, we're done.
-        if (m_done) {
-            break;
-        }
-
-        // Wait for some event to happen.
-        (void) m_handle.submit_and_wait();
-    }
-}
 
 template<di::concepts::Invocable<io_uring::SQE*> Fun>
 inline void enqueue_io_operation(IoUringContext* context, OperationStateBase* op, Fun&& function) {
