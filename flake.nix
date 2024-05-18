@@ -115,6 +115,7 @@
                 pkgs.automake115x
                 pkgs.qemu
                 pkgs.gdb
+                pkgs.fzf
                 pkgs."lldb_${llvmVersion}"
                 pkgs.ccache
                 pkgs.parted

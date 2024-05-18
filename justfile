@@ -18,60 +18,62 @@ alias br := build_run
 
 # Default command: configure and build
 default:
-    just configure_build
+    @just configure_build
 
 # Configure
 configure *args="":
     cmake --preset {{ preset }} {{ args }}
 
 # Build
-build *args="":
+build *args="": ensure_configured
     cmake --build --preset {{ preset }} {{ args }}
 
 # Run tests
-test *args="":
+test *args="": ensure_configured
     ctest --preset {{ preset }} {{ args }}
 
 # Run a specific test (regex matching)
-test_only name=test:
+test_only name=test: ensure_configured
     ctest --preset {{ preset }} -R {{ name }}
 
 # Configure and build
 configure_build:
-    just configure
-    just build
+    @just configure
+    @just build
 
 # Build and test
 build_test:
-    just build
-    just test
+    @just build
+    @just test
 
 # Configure and build and test
 configure_build_test:
-    just config
-    just bt
+    @just config
+    @just bt
 
 # Build and run a specific test (regex matching)
 build_test_only name=test:
-    just build
-    just test_only {{ name }}
+    @just build
+    @just test_only {{ name }}
 
 # Compile a specific file (regex matching)
-build_file name:
+build_file name: ensure_configured
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
 
     targets=$(cmake --build --preset {{ preset }}_non_unity -- -t targets all \
         | cut -d ' ' -f 1 \
         | tr -d '[:]' \
         | grep -E "{{ name }}" \
     )
+
+    echo -e '\e[1m'"cmake --build --preset {{ preset }}_non_unity -t "$targets'\e[m'
     cmake --build --preset {{ preset }}_non_unity -t ${targets}
 
 # Build a specific target (regex matching)
-build_target name:
+build_target name: ensure_configured
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
 
     targets=$(cmake --build --preset {{ preset }} -- -t targets all \
         | cut -d ' ' -f 1 \
@@ -90,12 +92,14 @@ build_target name:
         | grep -vE '/test$' \
         | grep -E '/' \
     )
+
+    echo -e '\e[1m'"cmake --build --preset {{ preset }} -t "$targets'\e[m'
     cmake --build --preset {{ preset }} -t $targets
 
 # Run a specific program (regex matching)
-run name *args:
+run name *args: ensure_configured
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
 
     targets=$(cmake --build --preset {{ preset }} -- -t targets all \
         | cut -d ' ' -f 1 \
@@ -118,14 +122,18 @@ run name *args:
         jq -rc '.configurePresets.[] | select(.name == "{{ preset }}") | .binaryDir' < CMakePresets.json | \
         sed s/\${sourceDir}/./g \
     )
+
+    set +e
     for target in $targets; do
+        echo -e '\e[1m'"$build_directory/$target {{ args }}"'\e[m'
         $build_directory/$target {{ args }}
     done
+    exit 0
 
 # Build and run a specific program (regex matching)
 build_run name *args:
-    just build_target {{ name }}
-    just run {{ name }} {{ args }}
+    @just build_target {{ name }}
+    @just run {{ name }} {{ args }}
 
 alias ic := iros_configure
 alias ibimg := iros_build_image
@@ -142,38 +150,38 @@ iros_configure:
     cmake --preset {{ iros_preset }}
 
 # Build Iros disk image
-iros_build_image:
+iros_build_image: ensure_iros_configured
     cmake --build --preset {{ iros_preset }} -t image
 
 # Run Iros
-iros_run:
+iros_run: ensure_iros_configured
     cmake --build --preset {{ iros_preset }} -t run
 
 # Full build Iros and produce disk image
-iros_build:
+iros_build: ensure_iros_configured
     cmake --build --preset {{ iros_preset }}
 
 # Full build Iros and run
-iros_build_run:
+iros_build_run: ensure_iros_configured
     cmake --build --preset {{ iros_preset }} -t ibr
 
 # Run tests on Iros
-iros_test:
+iros_test: ensure_iros_configured
     ctest --preset {{ iros_preset }}
 
 # Run a specific test on Iros (regex matching)
-iros_test_only name=default_iros_test:
+iros_test_only name=default_iros_test: ensure_iros_configured
     ctest --preset {{ iros_preset }} -R {{ name }}
 
 # Full build Iros and run tests
 iros_build_test:
-    just ib
-    just it
+    @just ib
+    @just it
 
 # Full build Iros and run a specific test (regex matching)
 iros_build_test_only name=default_iros_test:
-    just ib
-    just itonly {{ name }}
+    @just ib
+    @just itonly {{ name }}
 
 # Build Iros cross compiler
 build_toolchain:
@@ -192,14 +200,36 @@ check:
     nix flake check
 
 # Build docs
-build_docs:
+build_docs: ensure_configured
     cmake --build --preset {{ preset }} --target docs
 
 # Open docs
-open_docs:
+open_docs: ensure_configured
     cmake --build --preset {{ preset }} --target open_docs
 
 # Build and open docs
 docs:
-    just build_docs
-    just open_docs
+    @just build_docs
+    @just open_docs
+
+# Select a CMake preset (meant to be run with eval, e.g. `eval $(just choose)`)
+choose:
+    @echo "export PRESET=\$(cmake --list-presets=configure | tail +2 | fzf | awk '{ print \$1 }' | tr -d '[\"]')"
+
+[private]
+ensure_configured preset=preset:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    build_directory=$( \
+        jq -rc '.configurePresets.[] | select(.name == "{{ preset }}") | .binaryDir' < CMakePresets.json | \
+        sed s/\${sourceDir}/./g \
+    )
+    if [ ! -d "$build_directory" ]; then
+        echo -e '\e[1m'"cmake --preset {{ preset }}"'\e[m'
+        cmake --preset {{ preset }}
+    fi
+
+[private]
+ensure_iros_configured:
+    @just ensure_configured {{ iros_preset }}
