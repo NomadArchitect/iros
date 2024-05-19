@@ -7,18 +7,18 @@ if(DOXYGEN_FOUND)
         GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css.git
         GIT_SHALLOW TRUE
         GIT_TAG main
-        TMP_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/doxygen-awesome-css/tmp"
-        STAMP_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/doxygen-awesome-css/stamp"
-        DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/doxygen-awesome-css"
-        SOURCE_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/doxygen-awesome-css/src"
-        BINARY_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/doxygen-awesome-css/src"
+        TMP_DIR "${CMAKE_BINARY_DIR}/doxygen-awesome-css/tmp"
+        STAMP_DIR "${CMAKE_BINARY_DIR}/doxygen-awesome-css/stamp"
+        DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/doxygen-awesome-css"
+        SOURCE_DIR "${CMAKE_BINARY_DIR}/doxygen-awesome-css/src"
+        BINARY_DIR "${CMAKE_BINARY_DIR}/doxygen-awesome-css/src"
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         UPDATE_COMMAND ""
         INSTALL_COMMAND ""
         EXCLUDE_FROM_ALL 1
     )
-    set(DOXYGEN_AWESOME_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/doxygen-awesome-css/src")
+    set(DOXYGEN_AWESOME_DIR "${CMAKE_BINARY_DIR}/doxygen-awesome-css/src")
 
     set(DOXYGEN_GENERATE_HTML YES)
     set(DOXYGEN_GENERATE_XML NO)

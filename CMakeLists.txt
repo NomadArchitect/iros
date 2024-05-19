@@ -144,8 +144,8 @@ endif()
 
 # Link the active compile_commands.json to the project directory.
 if(NOT IROS_NeverLinkCompileCommands)
-    execute_process(COMMAND rm -f "${CMAKE_SOURCE_DIR}/compile_commands.json")
+    execute_process(COMMAND rm -f "${CMAKE_SOURCE_DIR}/build/compile_commands.json")
     execute_process(
-        COMMAND ln -s "${CMAKE_BINARY_DIR}/compile_commands.json" "${CMAKE_SOURCE_DIR}/compile_commands.json"
+        COMMAND ln -s "${CMAKE_BINARY_DIR}/compile_commands.json" "${CMAKE_SOURCE_DIR}/build/compile_commands.json"
     )
 endif()

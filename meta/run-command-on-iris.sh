@@ -31,7 +31,7 @@ echo "IROS_INITRD=$IROS_INITRD"
 echo "1=$1"
 
 export IROS_BUILD_DIR="$IROS_ROOT/build/$1"
-export IROS_LIMINE_DIR="$IROS_ROOT"/build/host/tools/limine/src
+export IROS_LIMINE_DIR="$IROS_BUILD_DIR"/limine/src
 
 export IROS_IMAGE="$IROS_BUILD_DIR"/iris-run.img
 export IROS_INITRD="$IROS_BUILD_DIR"/initrd-run/initrd.bin

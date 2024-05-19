@@ -89,10 +89,10 @@ if(IROS_BuildIris)
         GIT_REPOSITORY https://github.com/limine-bootloader/limine.git
         GIT_TAG v7.x-binary
         GIT_SHALLOW TRUE
-        TMP_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/limine/tmp"
-        STAMP_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/limine/stamp"
-        DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/limine"
-        SOURCE_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/limine/src"
+        TMP_DIR "${CMAKE_BINARY_DIR}/limine/tmp"
+        STAMP_DIR "${CMAKE_BINARY_DIR}/limine/stamp"
+        DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/limine"
+        SOURCE_DIR "${CMAKE_BINARY_DIR}/limine/src"
         BUILD_IN_SOURCE TRUE
         CONFIGURE_COMMAND ""
         BUILD_COMMAND "make"
@@ -100,10 +100,10 @@ if(IROS_BuildIris)
         INSTALL_COMMAND ""
     )
     set(LIMINE_DIR
-        "${CMAKE_SOURCE_DIR}/build/host/tools/limine/src"
+        "${CMAKE_BINARY_DIR}/limine/src"
         PARENT_SCOPE
     )
-    set(LIMINE_DIR "${CMAKE_SOURCE_DIR}/build/host/tools/limine/src")
+    set(LIMINE_DIR "${CMAKE_BINARY_DIR}/limine/src")
 
     add_library(iris_internal_headers INTERFACE)
     add_library(Iris::iris_internal_headers ALIAS iris_internal_headers)

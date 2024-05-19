@@ -4,8 +4,8 @@ if(CMAKE_CROSSCOMPILING)
     ExternalProject_Add(
         native
         SOURCE_DIR "${CMAKE_SOURCE_DIR}"
-        TMP_DIR "${CMAKE_SOURCE_DIR}/build/host/gcc/release/tools/tmp"
-        STAMP_DIR "${CMAKE_SOURCE_DIR}/build/host/gcc/release/tools/stamp"
+        TMP_DIR "${CMAKE_BINARY_DIR}/host-tools/tmp"
+        STAMP_DIR "${CMAKE_BINARY_DIR}/host-tools/stamp"
         BINARY_DIR "${CMAKE_SOURCE_DIR}/build/host/gcc/release/tools"
         INSTALL_DIR "${CMAKE_SOURCE_DIR}/build/host/gcc/release/tools/install"
         CMAKE_ARGS "--preset=gcc_release_tools" "-DIROS_NeverLinkCompileCommands=ON"

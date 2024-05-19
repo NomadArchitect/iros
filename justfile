@@ -230,6 +230,12 @@ ensure_configured preset=preset:
         cmake --preset {{ preset }}
     fi
 
+    build_directory="$(realpath $build_directory)"
+    if [ `readlink build/compile_commands.json` != "$build_directory"/compile_commands.json ]; then
+        rm -f build/compile_commands.json
+        ln -s "$build_directory"/compile_commands.json build/compile_commands.json
+    fi
+
 [private]
 ensure_iros_configured:
     @just ensure_configured {{ iros_preset }}
