@@ -10,11 +10,13 @@ namespace iris::initrd {
 struct Args {
     di::PathView path { "."_pv };
     di::PathView output { "initrd.bin"_pv };
+    bool help { false };
 
     constexpr static auto get_cli_parser() {
         return di::cli_parser<Args>("initrd"_sv, "Create iris init ramdisk"_sv)
-            .flag<&Args::path>('p', "path"_tsv, "Directory path to create from"_sv)
-            .flag<&Args::output>('o', "output"_tsv, "Output file path"_sv);
+            .help()
+            .option<&Args::path>('p', "path"_tsv, "Directory path to create from"_sv)
+            .option<&Args::output>('o', "output"_tsv, "Output file path"_sv);
     }
 };
 

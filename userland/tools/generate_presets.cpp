@@ -12,11 +12,13 @@ namespace generate_presets {
 struct Args {
     di::PathView output { "CMakePresets.json"_pv };
     bool prettier { false };
+    bool help { false };
 
     constexpr static auto get_cli_parser() {
         return di::cli_parser<Args>("generate_presets"_sv, "Generate CMake presets file"_sv)
-            .flag<&Args::output>('o', "output"_tsv, "Output file path"_sv)
-            .flag<&Args::prettier>('p', "prettier"_tsv, "Run Prettier on output"_sv);
+            .help()
+            .option<&Args::output>('o', "output"_tsv, "Output file path"_sv)
+            .option<&Args::prettier>('p', "prettier"_tsv, "Run Prettier on output"_sv);
     }
 };
 
@@ -221,7 +223,8 @@ static di::Tuple<di::Vector<CMakeConfigurePreset>, di::Vector<di::String>> make_
             "hidden": true,
             "cacheVariables": {
                 "IROS_BuildTests": "ON",
-                "IROS_BuildUserspace": "ON"
+                "IROS_BuildUserspace": "ON",
+                "IROS_BuildTools": "ON"
             }
         },
         {
@@ -257,7 +260,8 @@ static di::Tuple<di::Vector<CMakeConfigurePreset>, di::Vector<di::String>> make_
                 "IROS_UseDiusRuntime": "ON",
                 "IROS_BuildCcpp": "ON",
                 "IROS_BuildTests": "ON",
-                "IROS_BuildUserspace": "ON"
+                "IROS_BuildUserspace": "ON",
+                "IROS_BuildTools": "ON"
             }
         },
         {
@@ -267,7 +271,8 @@ static di::Tuple<di::Vector<CMakeConfigurePreset>, di::Vector<di::String>> make_
                 "IROS_BuildCcpp": "OFF",
                 "IROS_SanitizerFlags": "-fsanitize=thread -DDI_SANITIZER",
                 "IROS_BuildTests": "ON",
-                "IROS_BuildUserspace": "ON"
+                "IROS_BuildUserspace": "ON",
+                "IROS_BuildTools": "ON"
             }
         },
         {
@@ -277,7 +282,8 @@ static di::Tuple<di::Vector<CMakeConfigurePreset>, di::Vector<di::String>> make_
                 "IROS_BuildCcpp": "OFF",
                 "IROS_SanitizerFlags": "-fsanitize=address -DDI_SANITIZER",
                 "IROS_BuildTests": "ON",
-                "IROS_BuildUserspace": "ON"
+                "IROS_BuildUserspace": "ON",
+                "IROS_BuildTools": "ON"
             }
         },
         {
@@ -287,7 +293,8 @@ static di::Tuple<di::Vector<CMakeConfigurePreset>, di::Vector<di::String>> make_
                 "IROS_BuildCcpp": "OFF",
                 "IROS_SanitizerFlags": "-fsanitize=undefined -DDI_SANITIZER",
                 "IROS_BuildTests": "ON",
-                "IROS_BuildUserspace": "ON"
+                "IROS_BuildUserspace": "ON",
+                "IROS_BuildTools": "ON"
             }
         },
         {
@@ -297,7 +304,8 @@ static di::Tuple<di::Vector<CMakeConfigurePreset>, di::Vector<di::String>> make_
                 "IROS_BuildCcpp": "OFF",
                 "IROS_SanitizerFlags": "-fsanitize=memory -DDI_SANITIZER",
                 "IROS_BuildTests": "ON",
-                "IROS_BuildUserspace": "ON"
+                "IROS_BuildUserspace": "ON",
+                "IROS_BuildTools": "ON"
             }
         },
         {
@@ -307,7 +315,8 @@ static di::Tuple<di::Vector<CMakeConfigurePreset>, di::Vector<di::String>> make_
                 "IROS_BuildCcpp": "OFF",
                 "IROS_SanitizerFlags": "-fsanitize=address,undefined -DDI_SANITIZER",
                 "IROS_BuildTests": "ON",
-                "IROS_BuildUserspace": "ON"
+                "IROS_BuildUserspace": "ON",
+                "IROS_BuildTools": "ON"
             }
         },
         {
@@ -317,7 +326,8 @@ static di::Tuple<di::Vector<CMakeConfigurePreset>, di::Vector<di::String>> make_
                 "IROS_BuildCcpp": "OFF",
                 "IROS_ExtraFlags": "--coverage",
                 "IROS_BuildTests": "ON",
-                "IROS_BuildUserspace": "ON"
+                "IROS_BuildUserspace": "ON",
+                "IROS_BuildTools": "ON"
             }
         },
         {

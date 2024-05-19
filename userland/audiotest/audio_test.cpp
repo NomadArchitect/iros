@@ -20,10 +20,12 @@
 namespace audiotest {
 struct Args {
     di::Optional<di::PathView> wav_file;
+    bool help { false };
 
     constexpr static auto get_cli_parser() {
         return di::cli_parser<Args>("audio_test"_sv, "Iros audio test program"_sv)
-            .flag<&Args::wav_file>('w', "wave"_tsv, "Wave file to play"_sv);
+            .help()
+            .option<&Args::wav_file>('w', "wave"_tsv, "Wave file to play"_sv);
     }
 };
 

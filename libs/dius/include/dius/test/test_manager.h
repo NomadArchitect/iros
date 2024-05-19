@@ -14,13 +14,15 @@ public:
         bool list_simple { false };
         di::Optional<di::TransparentStringView> suite_name;
         di::Optional<di::TransparentStringView> case_name;
+        bool help { false };
 
         constexpr static auto get_cli_parser() {
             return di::cli_parser<Args>("dius_test"_sv, "Dius Test Runner"_sv)
-                .flag<&Args::list_simple>('L', "list-simple"_tsv,
-                                          "Output a simple machine readable list of test cases"_sv)
-                .flag<&Args::suite_name>('s', "suite"_tsv, "Specifc test suite to run"_sv)
-                .flag<&Args::case_name>('t', "test-case"_tsv, "Specific case to run in the format ([suite:]case)"_sv);
+                .help()
+                .option<&Args::list_simple>('L', "list-simple"_tsv,
+                                            "Output a simple machine readable list of test cases"_sv)
+                .option<&Args::suite_name>('s', "suite"_tsv, "Specifc test suite to run"_sv)
+                .option<&Args::case_name>('t', "test-case"_tsv, "Specific case to run in the format ([suite:]case)"_sv);
         }
     };
 

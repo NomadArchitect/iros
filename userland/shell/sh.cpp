@@ -4,7 +4,9 @@
 
 namespace sh {
 struct Args {
-    constexpr static auto get_cli_parser() { return di::cli_parser<Args>("sh"_sv, "Iros shell"_sv); }
+    bool help { false };
+
+    constexpr static auto get_cli_parser() { return di::cli_parser<Args>("sh"_sv, "Iros shell"_sv).help(); }
 };
 
 di::Result<void> main(Args&) {

@@ -73,7 +73,7 @@ void TestManager::final_report() {
 }
 
 di::Result<void> TestManager::run_tests(Args& args) {
-    auto [list_simple, suite_name, case_name] = args;
+    auto [list_simple, suite_name, case_name, _] = args;
 
     auto [first_to_remove, last_to_remove] = di::container::remove_if(m_test_cases, [&](auto&& test_case) {
         if (suite_name && *suite_name != test_case.suite_name()) {

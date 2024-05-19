@@ -8,9 +8,11 @@ namespace cp {
 struct Args {
     di::PathView source;
     di::PathView destination;
+    bool help { false };
 
     constexpr static auto get_cli_parser() {
-        return di::cli_parser<Args>("Copy Synchronously"_sv, "Copy source into destination use sync IO."_sv)
+        return di::cli_parser<Args>("cp"_sv, "Copy source into destination use sync IO."_sv)
+            .help()
             .argument<&Args::source>("SRC"_sv, "Source file to copy from"_sv, true)
             .argument<&Args::destination>("DEST"_sv, "Destination location to copy to"_sv, true);
     }

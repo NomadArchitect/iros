@@ -18,7 +18,7 @@ alias br := build_run
 
 # Default command: configure and build
 default:
-    @just configure_build
+    @just preset={{ preset }} configure_build
 
 # Configure
 configure *args="":
@@ -38,23 +38,23 @@ test_only name=test: ensure_configured
 
 # Configure and build
 configure_build:
-    @just configure
-    @just build
+    @just preset={{ preset }} configure
+    @just preset={{ preset }} build
 
 # Build and test
 build_test:
-    @just build
-    @just test
+    @just preset={{ preset }} build
+    @just preset={{ preset }} test
 
 # Configure and build and test
 configure_build_test:
-    @just config
-    @just bt
+    @just preset={{ preset }} config
+    @just preset={{ preset }} bt
 
 # Build and run a specific test (regex matching)
 build_test_only name=test:
-    @just build
-    @just test_only {{ name }}
+    @just preset={{ preset }} build
+    @just preset={{ preset }} ctest_only {{ name }}
 
 # Compile a specific file (regex matching)
 build_file name: ensure_configured
@@ -132,8 +132,8 @@ run name *args: ensure_configured
 
 # Build and run a specific program (regex matching)
 build_run name *args:
-    @just build_target {{ name }}
-    @just run {{ name }} {{ args }}
+    @just preset={{ preset }} build_target {{ name }}
+    @just preset={{ preset }} run {{ name }} {{ args }}
 
 alias ic := iros_configure
 alias ibimg := iros_build_image
@@ -175,13 +175,13 @@ iros_test_only name=default_iros_test: ensure_iros_configured
 
 # Full build Iros and run tests
 iros_build_test:
-    @just ib
-    @just it
+    @just iros_preset={{ iros_preset }} ib
+    @just iros_preset={{ iros_preset }} it
 
 # Full build Iros and run a specific test (regex matching)
 iros_build_test_only name=default_iros_test:
-    @just ib
-    @just itonly {{ name }}
+    @just iros_preset={{ iros_preset }} ib
+    @just iros_preset={{ iros_preset }} itonly {{ name }}
 
 # Build Iros cross compiler
 build_toolchain:
@@ -190,6 +190,10 @@ build_toolchain:
 # Build Iros toolchain docker image
 build_docker:
     docker build -t ghcr.io/coletrammer/iros_toolchain:iris . -f meta/docker/Dockerfile
+
+# Generate the CMakePrests.json file
+generate_presets:
+    @just preset=gcc_release_tools build_run generate_presets -p
 
 # Auto-format source code
 format:
@@ -209,8 +213,8 @@ open_docs: ensure_configured
 
 # Build and open docs
 docs:
-    @just build_docs
-    @just open_docs
+    @just preset={{ preset }} build_docs
+    @just preset={{ preset }} open_docs
 
 # Select a CMake preset (meant to be run with eval, e.g. `eval $(just choose)`)
 choose:

@@ -4,9 +4,11 @@
 namespace ls {
 struct Args {
     di::PathView path { "."_pv };
+    bool help { false };
 
     constexpr static auto get_cli_parser() {
         return di::cli_parser<Args>("ls"_sv, "List directory contents"_sv)
+            .help()
             .argument<&Args::path>("PATH"_sv, "Directory path to list from"_sv, false);
     }
 };
