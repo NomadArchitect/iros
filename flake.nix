@@ -5,7 +5,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-root.url = "github:srid/flake-root";
     treefmt-nix.url = "github:numtide/treefmt-nix";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
   outputs = inputs @ {flake-parts, ...}:
@@ -43,35 +43,6 @@
             options = ["-i"];
             includes = ["CMakeLists.txt" "CMakeToolchain.*.txt" "*.cmake"];
           };
-        };
-
-        _module.args.pkgs = import inputs.nixpkgs {
-          inherit system;
-          overlays = [
-            (
-              self: super: {
-                default-gcc-version = 13;
-                gcc_latest = self.gcc14;
-                gcc14 = super.lowPrio (super.wrapCC (super.gcc13.cc.overrideAttrs (oldAttrs: let
-                  version = "14.1.0";
-                in rec {
-                  name = "gcc-${version}";
-                  inherit version;
-                  passthru = oldAttrs.passthru // {inherit version;};
-                  src = super.stdenv.fetchurlBoot {
-                    url = "https://gcc.gnu.org/pub/gcc/releases/gcc-${version}/gcc-${version}.tar.xz";
-                    hash = "sha256-4oPGVJh6/j3p2AgLwL15U0tcoNaBpzoR/ytdN2dCaEA=";
-                  };
-                  nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [super.flex];
-                  patches =
-                    super.lib.filter
-                    (patch: !super.lib.hasSuffix "ICE-PR110280.patch" (builtins.baseNameOf patch))
-                    oldAttrs.patches;
-                })));
-                gcc14Stdenv = super.overrideCC self.gccStdenv self.gcc14;
-              }
-            )
-          ];
         };
 
         devShells.default = let
